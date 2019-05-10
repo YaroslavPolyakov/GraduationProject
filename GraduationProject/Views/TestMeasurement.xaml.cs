@@ -139,15 +139,15 @@ namespace GraduationProject.Views
                     else
                     {
                         //вычисляем
-                        _dataModel.Y = CurrentContext.DataList[CurrentContext.DataList.Count - 1].Y +
+                        _dataModel.Y = Math.Round(CurrentContext.DataList[CurrentContext.DataList.Count - 1].Y +
                                        (_dataModel.HorizontalDistance.GetValueOrDefault() *
-                                        Math.Sin(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault()));
+                                        Math.Sin(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 3);
 
-                        _dataModel.X = CurrentContext.DataList[CurrentContext.DataList.Count - 1].X +
+                        _dataModel.X = Math.Round(CurrentContext.DataList[CurrentContext.DataList.Count - 1].X +
                                        (_dataModel.HorizontalDistance.GetValueOrDefault() *
-                                        Math.Cos(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault()));
+                                        Math.Cos(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 3);
 
-                        _dataModel.VerticalDistance = _dataModel.Height ?? Math.Sqrt(Math.Pow(_dataModel.SlopeDistance.GetValueOrDefault(), 2) - Math.Pow(_dataModel.HorizontalDistance.GetValueOrDefault(), 2));
+                        _dataModel.VerticalDistance = _dataModel.Height ?? Math.Round(Math.Sqrt(Math.Pow(_dataModel.SlopeDistance.GetValueOrDefault(), 2) - Math.Pow(_dataModel.HorizontalDistance.GetValueOrDefault(), 2)), 3);
                     }
 
                     if (_selectMeasure.Id != 1)
@@ -456,6 +456,7 @@ namespace GraduationProject.Views
                     var column = new DataGridTextColumn
                     {
                         Header = itemTemplateColumn.Name,
+                        FontSize = 20,
                         Binding = new Binding(itemTemplateColumn.BindingName)
                     };
 

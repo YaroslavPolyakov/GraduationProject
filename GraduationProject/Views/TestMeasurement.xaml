@@ -5,7 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModel="clr-namespace:GraduationProject.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converte="clr-namespace:GraduationProject.Converters"
              mc:Ignorable="d" MaxWidth="1280" MaxHeight="800">
+    <UserControl.Resources>
+        <converte:InputValidationRule x:Key="convert" />
+    </UserControl.Resources>
     <UserControl.DataContext>
         <viewModel:TestMeasurementViewModel x:Name="ViewModel" />
     </UserControl.DataContext>
@@ -67,15 +71,15 @@
             </ComboBox>
 
             <DockPanel x:Name="DiameterDockPanel" Visibility="Hidden" Margin="10,0,0,0" HorizontalAlignment="Right">
-                <Label DockPanel.Dock="Top"  Content="Диаметр"/>
-                <Label DockPanel.Dock="Left" Content="1"/>
-                <Label DockPanel.Dock="Right" Content="2"/>
+                <Label DockPanel.Dock="Top" FontSize="20" Content="Диаметр"/>
+                <Label DockPanel.Dock="Left" FontSize="19" Content="1"/>
+                <Label DockPanel.Dock="Right" FontSize="19" Content="2"/>
                 <ToggleButton x:Name="DiameterButton" Checked="CheckBoxDiameter_Checked" Unchecked="CheckBoxDiameter_Unchecked"/>
             </DockPanel>
             <DockPanel x:Name="HeightDockPanel" Visibility="Hidden" Margin="10,0,0,0" HorizontalAlignment="Right">
-                <Label DockPanel.Dock="Top" HorizontalAlignment="Center"  Content="Высота"/>
-                <Label DockPanel.Dock="Left" Content="ВЧСЛ"/>
-                <Label DockPanel.Dock="Right" Content="ИЗМР"/>
+                <Label DockPanel.Dock="Top" FontSize="20" HorizontalAlignment="Center"  Content="Высота"/>
+                <Label DockPanel.Dock="Left" FontSize="19" Content="ВЧСЛ"/>
+                <Label DockPanel.Dock="Right" FontSize="19" Content="ИЗМР"/>
                 <ToggleButton x:Name="HeightButton" Checked="CheckBoxHeight_Checked" Unchecked="CheckBoxHeight_Unchecked"/>
             </DockPanel>
         </StackPanel>
@@ -87,12 +91,28 @@
 
         <StackPanel Margin="10,50,10,10" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
             <TextBlock FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" Text="σ = " />
-            <TextBox x:Name="SigmaTextBox" FontSize="22" Text="{Binding Sigma}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <TextBox x:Name="SigmaTextBox" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBox.Text>
+                    <Binding Path="Sigma" ValidatesOnDataErrors="True" UpdateSourceTrigger="PropertyChanged" StringFormat="N2">
+                        <Binding.ValidationRules>
+                            <converte:InputValidationRule ErrorMessage="Ошибка" />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
         </StackPanel>
 
         <StackPanel Margin="10,90,10,10" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
             <TextBlock FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Ht = " />
-            <TextBox FontSize="22" Text="{Binding HeightLevelEyes}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <TextBox FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBox.Text>
+                    <Binding Path="HeightLevelEyes" ValidatesOnDataErrors="True" UpdateSourceTrigger="PropertyChanged" StringFormat="0.0">
+                        <Binding.ValidationRules>
+                            <converte:InputValidationRule ErrorMessage="Ошибка" />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
         </StackPanel>
 
 
@@ -108,7 +128,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="№ Измерения" IsReadOnly="True" Binding="{Binding Path=Id}" MinWidth="130" />
+                <DataGridTextColumn Header="№ Измерения" FontSize="20" IsReadOnly="True" Binding="{Binding Path=Id}" MinWidth="130" />
                 <!--<DataGridTextColumn Header="Уклон" IsReadOnly="True" Binding="{Binding Path=Bias}" MinWidth="130" />
                 <DataGridTextColumn Header="Азимут" IsReadOnly="True" Binding="{Binding Path=Azimuth}" MinWidth="130" />-->
                 <!--<DataGridTextColumn Header="Диаметр" IsReadOnly="True" Binding="{Binding Path=DiameterOne}" MinWidth="130" />
