@@ -44,31 +44,32 @@ namespace GraduationProject.Views
         private void Device_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             BtDevice = (sender as ComboBox)?.SelectedItem as BluetoothDeviceInfo;
-            if (BtDevice != null)
-            {
-                if (BluetoothSecurity.PairRequest(BtDevice.DeviceAddress, "1111"))
-                {
-                    if (BtDevice.Authenticated)
-                    {
-                        ViewModel.BluetoothDeviceInfo = BtDevice;
-                        EllipseDistance.Fill = Brushes.DarkGreen;
+            ParseStringToObject("$PLTIT,HV,4,M,235,D,5,D,6,M*7E");
+            //if (BtDevice != null)
+            //{
+            //    if (BluetoothSecurity.PairRequest(BtDevice.DeviceAddress, "1111"))
+            //    {
+            //        if (BtDevice.Authenticated)
+            //        {
+            //            ViewModel.BluetoothDeviceInfo = BtDevice;
+            //            EllipseDistance.Fill = Brushes.DarkGreen;
 
-                        BluetoothClient.SetPin("1111");
-                        BluetoothClient.BeginConnect(BtDevice.DeviceAddress, BluetoothService.SerialPort, Connect,
-                            BtDevice);
-                    }
-                    else
-                    {
-                        ViewModel.BluetoothDeviceInfo = null;
-                        MessageBox.Show("Аутентификация не пройдена. Попробуйте еще раз.");
-                    }
-                }
-                else
-                {
-                    ViewModel.BluetoothDeviceInfo = null;
-                    MessageBox.Show("Сопряжение с устройством не установлено.");
-                }
-            }
+            //            BluetoothClient.SetPin("1111");
+            //            BluetoothClient.BeginConnect(BtDevice.DeviceAddress, BluetoothService.SerialPort, Connect,
+            //                BtDevice);
+            //        }
+            //        else
+            //        {
+            //            ViewModel.BluetoothDeviceInfo = null;
+            //            MessageBox.Show("Аутентификация не пройдена. Попробуйте еще раз.");
+            //        }
+            //    }
+            //    else
+            //    {
+            //        ViewModel.BluetoothDeviceInfo = null;
+            //        MessageBox.Show("Сопряжение с устройством не установлено.");
+            //    }
+            //}
         }
 
         private void Connect(IAsyncResult result)
@@ -122,7 +123,7 @@ namespace GraduationProject.Views
                     };
                 }
 
-                if (CheckMessage(message, arrayData) && (_dataModel.Azimuth == null || _dataModel.Height == null))
+                if (CheckMessage(message, arrayData))
                 {
                     _dataModel.HorizontalDistance =
                         indexHv == 0 ? null : CurrentContext.ToDoubleParse(arrayData[indexHv]);
@@ -149,20 +150,29 @@ namespace GraduationProject.Views
                         _dataModel.VerticalDistance = _dataModel.Height ?? Math.Sqrt(Math.Pow(_dataModel.SlopeDistance.GetValueOrDefault(), 2) - Math.Pow(_dataModel.HorizontalDistance.GetValueOrDefault(), 2));
                     }
 
-                    if (_dataModel.DiameterTwo != 0 && _isHasDiameterTwo && _selectMeasure.Id != 1)
+                    if (_selectMeasure.Id != 1)
+                    {
+                        if (_dataModel.DiameterTwo != 0 && _isHasDiameterTwo)
+                        {
+                            ViewModel.Measurements.Add(_dataModel);
+                            CurrentContext.DataList.Add(_dataModel);
+                            _dataModel = null;
+                            return;
+                        }
+
+                        if (!_isHasDiameterTwo && _dataModel.Species != null)
+                        {
+                            ViewModel.Measurements.Add(_dataModel);
+                            CurrentContext.DataList.Add(_dataModel);
+                            _dataModel = null;
+                        }
+                    }
+                    else
                     {
                         ViewModel.Measurements.Add(_dataModel);
                         CurrentContext.DataList.Add(_dataModel);
                         _dataModel = null;
-                        return;
                     }
-
-                    if (!_isHasDiameterTwo && _dataModel.Species != null && _selectMeasure.Id != 1)
-                    {
-                        ViewModel.Measurements.Add(_dataModel);
-                        CurrentContext.DataList.Add(_dataModel);
-                    }
-                    _dataModel = null;
                 }
             }
         }
@@ -170,26 +180,26 @@ namespace GraduationProject.Views
         private void Fork_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ForkBtDevice = (sender as ComboBox)?.SelectedItem as BluetoothDeviceInfo;
+            ParseForkStringToObject("$PHGF,SPC,2,ABC,*2B\n$PHGF,DIA,M,277,*2A");
+            //if (ForkBtDevice != null && BluetoothSecurity.PairRequest(ForkBtDevice.DeviceAddress, "1234"))
+            //{
+            //    if (ForkBtDevice.Authenticated)
+            //    {
+            //        ViewModel.ForkDeviceInfo = ForkBtDevice;
 
-            if (ForkBtDevice != null && BluetoothSecurity.PairRequest(ForkBtDevice.DeviceAddress, "1234"))
-            {
-                if (ForkBtDevice.Authenticated)
-                {
-                    ViewModel.ForkDeviceInfo = ForkBtDevice;
+            //        if (ViewModel.ForkDeviceInfo != null)
+            //        {
+            //            EllipseFork.Fill = Brushes.DarkGreen;
+            //        }
 
-                    if (ViewModel.ForkDeviceInfo != null)
-                    {
-                        EllipseFork.Fill = Brushes.DarkGreen;
-                    }
-
-                    BluetoothForkClient.SetPin("1234");
-                    BluetoothForkClient.BeginConnect(
-                        ForkBtDevice.DeviceAddress,
-                        BluetoothService.SerialPort,
-                        ConnectToFork,
-                        ForkBtDevice);
-                }
-            }
+            //        BluetoothForkClient.SetPin("1234");
+            //        BluetoothForkClient.BeginConnect(
+            //            ForkBtDevice.DeviceAddress,
+            //            BluetoothService.SerialPort,
+            //            ConnectToFork,
+            //            ForkBtDevice);
+            //    }
+            //}
         }
 
         private void ConnectToFork(IAsyncResult result)
@@ -242,24 +252,21 @@ namespace GraduationProject.Views
                 };
             }
 
-            if (_dataModel.Azimuth != null)
+            if (_dataModel.Azimuth != null || _dataModel.Height != null)
             {
-                //if (_isHasDiameterTwo && _dataModel.DiameterOne != 0)
-                //todo
-                //if (CurrentContext.MeasureValues.FirstOrDefault(value => value.CheckStatus && value.BindingName == "DiameterTwo") != null && _dataModel.DiameterOne != 0)
+                if (_isHasDiameterTwo && _dataModel.DiameterOne != 0 && _selectMeasure.Id != 1)
                 {
                     _dataModel.DiameterTwo = dia;
                     ViewModel.Measurements.Add(_dataModel);
                     CurrentContext.DataList.Add(_dataModel);
                     _dataModel = null;
                 }
-                //else
+                else
                 {
                     _dataModel.Species = species;
                     _dataModel.DiameterOne = dia;
 
-                    //TODO
-                    //if (CurrentContext.MeasureValues.FirstOrDefault(value => value.CheckStatus && value.BindingName == "DiameterOne") != null)
+                    if (!_isHasDiameterTwo)
                     {
                         ViewModel.Measurements.Add(_dataModel);
                         CurrentContext.DataList.Add(_dataModel);
@@ -269,12 +276,11 @@ namespace GraduationProject.Views
             }
             else
             {
-                //todo
-                //if (CurrentContext.MeasureValues.FirstOrDefault(value => value.CheckStatus && value.BindingName == "DiameterTwo") != null && _dataModel.DiameterOne != 0)
+                if (_isHasDiameterTwo && _dataModel.DiameterOne != 0 && _selectMeasure.Id != 1)
                 {
                     _dataModel.DiameterTwo = dia;
                 }
-                //else
+                else
                 {
                     _dataModel.Species = species;
                     _dataModel.DiameterOne = dia;
@@ -292,13 +298,14 @@ namespace GraduationProject.Views
                 stringBuilder.AppendLine(item.ToString());
             }
 
-            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-
-            saveFileDialog1.Filter = "СSV (*.csv)|*.csv";
+            var saveFileDialog1 = new SaveFileDialog
+            {
+                Filter = "СSV (*.csv)|*.csv"
+            };
 
             if (saveFileDialog1.ShowDialog() == true)
             {
-                using (StreamWriter sw = new StreamWriter(saveFileDialog1.OpenFile(), System.Text.Encoding.Default))
+                using (var sw = new StreamWriter(saveFileDialog1.OpenFile(), System.Text.Encoding.Default))
                 {
                     sw.Write(stringBuilder.ToString());
                     sw.Close();
@@ -383,35 +390,20 @@ namespace GraduationProject.Views
 
         private bool CheckMessage(string message, string[] arrayData)
         {
-            if (message.Contains("HV") && message.Contains("D") && arrayData.Length >= 10 && _selectMeasure != null && !_isMeasurable)
-            {
-                var trueModel = new TemplateColumn {BindingName = "HorizontalDistance", Name = "Горизонт. дистанция"};
-                if (_selectMeasure.TemplateColumns.Contains(trueModel))
-                {
-                    return true;
-                }
-                return false;
-            }
-
-            if (message.Contains("HT") && _selectMeasure != null && _isMeasurable)
-            {
-                if (_selectMeasure.Name == "ВПП")
-                {
-                    return true;
-                }
-                return false;
-            }
-            return false;
+            return message.Contains("HV") && message.Contains("D") && arrayData.Length >= 10 && _selectMeasure != null && !_isMeasurable
+                ? true
+                : message.Contains("HT") && _selectMeasure != null && _isMeasurable ? true : false;
         }
 
         private void CheckBoxDiameter_Checked(object sender, RoutedEventArgs e)
         {
             _isHasDiameterTwo = true;
-            DataGridTextColumn column = new DataGridTextColumn
+            var column = new DataGridTextColumn
             {
                 Header = "Диаметр №2",
                 Binding = new Binding("DiameterTwo")
             };
+
             if (!DataGrid.Columns.Contains(column))
             {
                 DataGrid.Columns.Add(column);
@@ -422,7 +414,11 @@ namespace GraduationProject.Views
         {
             _isHasDiameterTwo = false;
             var columnForRemove = DataGrid.Columns.FirstOrDefault(x => x.Header?.ToString() == "Диаметр №2");
-            if (columnForRemove != null) DataGrid.Columns.RemoveAt(columnForRemove.DisplayIndex);
+
+            if (columnForRemove != null)
+            {
+                DataGrid.Columns.RemoveAt(columnForRemove.DisplayIndex);
+            }
         }
 
         private void CheckBoxHeight_Checked(object sender, RoutedEventArgs e)
@@ -443,7 +439,11 @@ namespace GraduationProject.Views
                 foreach (var itemColumn in _selectMeasure.TemplateColumns)
                 {
                     var columnForRemove = DataGrid.Columns.FirstOrDefault(x => x.Header?.ToString() == itemColumn.Name);
-                    if (columnForRemove != null) DataGrid.Columns.RemoveAt(columnForRemove.DisplayIndex);
+
+                    if (columnForRemove != null)
+                    {
+                        DataGrid.Columns.RemoveAt(columnForRemove.DisplayIndex);
+                    }
                 }
             }
             ViewModel.SelectMeasure = (sender as ComboBox)?.SelectedItem as MeasureValueModel;
@@ -453,11 +453,12 @@ namespace GraduationProject.Views
             {
                 foreach (var itemTemplateColumn in _selectMeasure.TemplateColumns)
                 {
-                    DataGridTextColumn column = new DataGridTextColumn
+                    var column = new DataGridTextColumn
                     {
                         Header = itemTemplateColumn.Name,
                         Binding = new Binding(itemTemplateColumn.BindingName)
                     };
+
                     DataGrid.Columns.Add(column);
                 }
 
