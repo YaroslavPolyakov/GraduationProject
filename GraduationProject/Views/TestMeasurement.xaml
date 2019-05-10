@@ -1,0 +1,130 @@
+﻿<UserControl x:Class="GraduationProject.Views.TestMeasurement"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModel="clr-namespace:GraduationProject.ViewModels"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" MaxWidth="1280" MaxHeight="800">
+    <UserControl.DataContext>
+        <viewModel:TestMeasurementViewModel x:Name="ViewModel" />
+    </UserControl.DataContext>
+    <Grid>
+        <Grid.RenderTransform>
+            <TransformGroup>
+                <ScaleTransform/>
+                <SkewTransform/>
+                <RotateTransform/>
+                <TranslateTransform/>
+            </TransformGroup>
+        </Grid.RenderTransform>
+        <Border Background="#FFDEDEDE" >
+
+        </Border>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <TextBlock Margin="10,0,0,0" Width="120" Text="Дальномер : " VerticalAlignment="Center" FontSize="22"/>
+            <ComboBox Style="{StaticResource MaterialDesignComboBox}" HorizontalContentAlignment="Center" HorizontalAlignment="Right"
+                       MinWidth="200" MaxWidth="200" FontSize="22" ItemsSource="{Binding Devices}"
+                      SelectedItem="{Binding BluetoothDeviceInfo}" SelectionChanged="Device_OnSelectionChanged">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock MinWidth="200" MaxWidth="200" Text="{Binding DeviceName}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Ellipse Margin="10" x:Name="EllipseDistance" Fill="Red" Width="15" Height="15" />
+        </StackPanel>
+        <StackPanel Margin="0,40" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" Text="Вилка"></TextBlock>
+            <!--<TextBox Name="ForkTextBox" Background="Chartreuse" Height="50" Width="50" TextChanged="ForkTextBox_OnTextChanged" />-->
+            <ComboBox Margin="50,0,0,0"  Style="{StaticResource MaterialDesignComboBox}" HorizontalContentAlignment="Center" HorizontalAlignment="Right"
+                      MinWidth="200" MaxWidth="200" FontSize="22" ItemsSource="{Binding Devices}"
+                      SelectedItem="{Binding ForkDeviceInfo}" SelectionChanged="Fork_OnSelectionChanged">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock MinWidth="200" MaxWidth="200" Text="{Binding DeviceName}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Ellipse Margin="10" x:Name="EllipseFork" Fill="Red" Width="15" Height="15" />
+        </StackPanel>
+
+        <StackPanel Margin="0,80" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" Text="Режим" />
+            <ComboBox Margin="40,0,0,0"  Style="{StaticResource MaterialDesignComboBox}" HorizontalContentAlignment="Center" HorizontalAlignment="Right"
+                      MinWidth="200" MaxWidth="200" FontSize="22" ItemsSource="{Binding MeasureValues}" SelectedItem="{Binding SelectMeasure}" SelectionChanged="Selector_OnSelectionChanged">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock MinWidth="200" MaxWidth="200" Text="{Binding Name}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <DockPanel x:Name="DiameterDockPanel" Visibility="Hidden" Margin="10,0,0,0" HorizontalAlignment="Right">
+                <Label DockPanel.Dock="Top"  Content="Диаметр"/>
+                <Label DockPanel.Dock="Left" Content="1"/>
+                <Label DockPanel.Dock="Right" Content="2"/>
+                <ToggleButton x:Name="DiameterButton" Checked="CheckBoxDiameter_Checked" Unchecked="CheckBoxDiameter_Unchecked"/>
+            </DockPanel>
+            <DockPanel x:Name="HeightDockPanel" Visibility="Hidden" Margin="10,0,0,0" HorizontalAlignment="Right">
+                <Label DockPanel.Dock="Top" HorizontalAlignment="Center"  Content="Высота"/>
+                <Label DockPanel.Dock="Left" Content="ВЧСЛ"/>
+                <Label DockPanel.Dock="Right" Content="ИЗМР"/>
+                <ToggleButton x:Name="HeightButton" Checked="CheckBoxHeight_Checked" Unchecked="CheckBoxHeight_Unchecked"/>
+            </DockPanel>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <Button Content="Сохранить в CSV" Width="Auto" Height="Auto" Margin="0,10,10,10"
+                    Click="ButtonBase_OnClick" />
+        </StackPanel>
+
+        <StackPanel Margin="10,50,10,10" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <TextBlock FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" Text="σ = " />
+            <TextBox x:Name="SigmaTextBox" FontSize="22" Text="{Binding Sigma}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <StackPanel Margin="10,90,10,10" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <TextBlock FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Ht = " />
+            <TextBox FontSize="22" Text="{Binding HeightLevelEyes}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </StackPanel>
+
+
+        <DataGrid AutoGenerateColumns="False" x:Name="DataGrid" CanUserAddRows="True" Margin="10,200,10,10" MinWidth="800"
+                  ItemsSource="{Binding Measurements}" CanUserDeleteRows="True" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button x:Name="ButtonDeleteRow" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF31577E" Click="ButtonDeleteRow_OnClick">
+                                <materialDesign:PackIcon Kind="Delete"/>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="№ Измерения" IsReadOnly="True" Binding="{Binding Path=Id}" MinWidth="130" />
+                <!--<DataGridTextColumn Header="Уклон" IsReadOnly="True" Binding="{Binding Path=Bias}" MinWidth="130" />
+                <DataGridTextColumn Header="Азимут" IsReadOnly="True" Binding="{Binding Path=Azimuth}" MinWidth="130" />-->
+                <!--<DataGridTextColumn Header="Диаметр" IsReadOnly="True" Binding="{Binding Path=DiameterOne}" MinWidth="130" />
+                <DataGridTextColumn Header="Диаметр 2" IsReadOnly="True" Binding="{Binding Path=DiameterTwo}" MinWidth="130" />
+                <DataGridTextColumn Header="Порода" IsReadOnly="True" Binding="{Binding Path=Species}" MinWidth="130" />
+                <DataGridTextColumn Header="Горизонтальное расстояние" IsReadOnly="True" Binding="{Binding Path=HorizontalDistance}" MinWidth="130" />
+                <DataGridTextColumn Header="Азимут" IsReadOnly="True" Binding="{Binding Path=Azimuth}" MinWidth="130" />
+                <DataGridTextColumn Header="Недоступное расстояние" IsReadOnly="True" Binding="{Binding Path=NotAvailableDinstance}" MinWidth="130" />
+                <DataGridTextColumn Header="Высота" IsReadOnly="True" Binding="{Binding Path=Hight}" MinWidth="130" />
+                <DataGridTextColumn Header="Уклон" IsReadOnly="True" Binding="{Binding Path=Bias}" MinWidth="130" />
+                <DataGridTextColumn Header="Наклонное расстояние" IsReadOnly="True" Binding="{Binding Path=SlopeDistance}" MinWidth="130" />-->
+            </DataGrid.Columns>
+        </DataGrid>
+        <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            <Button Content="Очистить" Width="Auto" Height="Auto"
+                    Click="ButtonClear_OnClick" />
+        </StackPanel>-->
+    </Grid>
+</UserControl>

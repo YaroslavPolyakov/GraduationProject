@@ -1,0 +1,66 @@
+﻿<Window x:Class="GraduationProject.Views.Login"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Title="Диплом"
+        Background="#FF1F233E" MinHeight="480" MinWidth="800" MaxWidth="1980" MaxHeight="1080" WindowState="Normal">
+    <Grid Background="#FF1F233E">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+
+        </Grid.RowDefinitions>
+        <Image Grid.Row="1" Grid.Column="0" MaxWidth="150" MaxHeight="150" MinHeight="100" MinWidth="100" HorizontalAlignment="Right" Source="/Resources/logo.png" Height="Auto"/>
+        <Label Grid.Row="1" Grid.Column="1" Content="Диплом" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" FontSize="48" FontFamily="Roboto Th"/>
+        <Label Grid.Row="2" Content="Логин" Margin="0,0,40,0" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="22" Foreground="#FF1ECCD1" FontFamily="Roboto Th"/>
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="LoginTextBox" HorizontalAlignment="Left" MinHeight="50" MaxHeight="200" TextWrapping="Wrap" VerticalAlignment="Center" MinWidth="250" MaxWidth="200" VerticalContentAlignment="Center" Padding="10,0,0,0"  FontFamily="Roboto Th" BorderBrush="{x:Null}" />
+        <Label Grid.Row="3" Content="Пароль" Margin="0,0,40,0" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="22" Foreground="#FF1ECCD1" FontFamily="Roboto Th"/>
+        <PasswordBox Grid.Row="3" Grid.Column="1" x:Name="PasswordPasswordBox" HorizontalAlignment="Left" MinHeight="50" MaxHeight="200" VerticalAlignment="Center" MinWidth="250" MaxWidth="200" VerticalContentAlignment="Center" Padding="10,0,0,0"  FontFamily="Roboto Th" BorderBrush="{x:Null}" />
+
+        <Button Grid.Row="4" Grid.ColumnSpan="2" x:Name="Enter" 
+                Content="Вход" 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center" 
+                MinWidth="250" 
+                MinHeight="50"
+                MaxWidth="500"
+                MaxHeight="200"
+                Background="#FF00A8AC" 
+                FontFamily="Roboto Th" 
+                FontSize="24" 
+                Foreground="White" 
+                BorderBrush="{x:Null}" 
+                Click="Button_Click"/>
+        <Popup x:Name="Popup1" 
+                   StaysOpen="False" 
+                   Placement="Relative" 
+                   MinHeight="25" 
+                   MinWidth="453" 
+                   AllowsTransparency="True"
+                   
+                   HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+                   PopupAnimation="Slide"
+                   VerticalOffset ="320" 
+                   HorizontalOffset="135">
+
+            <TextBlock TextAlignment="Center"
+                           FontSize="14"
+                           Background="#FF00A8AC" 
+                           Foreground="White" Width="186">
+                    Неверный логин или пароль
+            </TextBlock>
+        </Popup>
+
+    </Grid>
+</Window>

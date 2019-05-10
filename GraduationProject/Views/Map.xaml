@@ -1,0 +1,12 @@
+﻿<UserControl x:Class="GraduationProject.Views.Map"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:gmaps="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation"
+             xmlns:local="clr-namespace:GraduationProject.Views"
+             mc:Ignorable="d" x:Name="MapUserControl" MaxWidth="1280" MaxHeight="800">
+    <Grid x:Name="Grid">
+        <gmaps:GMapControl x:Name="GMapControl" Loaded = "mapView_Loaded" />
+    </Grid>
+</UserControl>
