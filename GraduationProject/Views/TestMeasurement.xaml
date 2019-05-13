@@ -83,7 +83,9 @@
                 <ToggleButton x:Name="HeightButton" Checked="CheckBoxHeight_Checked" Unchecked="CheckBoxHeight_Unchecked"/>
             </DockPanel>
         </StackPanel>
-
+        <StackPanel Margin="10,150" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <CheckBox Content="Режим редактирования" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" FontSize="22"/>
+        </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
             <Button Content="Сохранить в CSV" Width="Auto" Height="Auto" Margin="0,10,10,10"
                     Click="ButtonBase_OnClick" />

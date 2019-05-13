@@ -511,5 +511,16 @@ namespace GraduationProject.Views
                 }
             }
         }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            DataGrid.IsReadOnly = false;
+            DataGrid.CanUserAddRows = false;
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            DataGrid.IsReadOnly = true;
+        }
     }
 }
