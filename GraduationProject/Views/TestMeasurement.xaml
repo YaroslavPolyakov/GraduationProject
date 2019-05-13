@@ -90,7 +90,7 @@
         </StackPanel>
 
         <StackPanel Margin="10,50,10,10" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-            <TextBlock FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" Text="σ = " />
+            <TextBlock FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" Text="MC = " />
             <TextBox x:Name="SigmaTextBox" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBox.Text>
                     <Binding Path="Sigma" ValidatesOnDataErrors="True" UpdateSourceTrigger="PropertyChanged" StringFormat="N2">
@@ -103,7 +103,7 @@
         </StackPanel>
 
         <StackPanel Margin="10,90,10,10" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-            <TextBlock FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Ht = " />
+            <TextBlock FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" Text="HG = " />
             <TextBox FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBox.Text>
                     <Binding Path="HeightLevelEyes" ValidatesOnDataErrors="True" UpdateSourceTrigger="PropertyChanged" StringFormat="0.0">

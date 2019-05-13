@@ -131,21 +131,30 @@ namespace GraduationProject.Views
                     _dataModel.Bias = indexD == 0 ? null : CurrentContext.ToDoubleParse(arrayData[indexD]);
                     _dataModel.SlopeDistance = indexD1 == 0 ? null : CurrentContext.ToDoubleParse(arrayData[indexD1]);
                     _dataModel.Height = indexHt == 0 ? null : CurrentContext.ToDoubleParse(arrayData[indexHt]);
-                    if (CurrentContext.DataList.Count == 0)
                     {
-                        _dataModel.X = CurrentContext.StartupY;
-                        _dataModel.Y = CurrentContext.StartupX;
-                    }
-                    else
-                    {
-                        //вычисляем
-                        _dataModel.Y = Math.Round(CurrentContext.DataList[CurrentContext.DataList.Count - 1].Y +
-                                       (_dataModel.HorizontalDistance.GetValueOrDefault() *
-                                        Math.Sin(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 3);
+                        if (CurrentContext.DataList.Count == 0)
+                        {
+                            _dataModel.X = Math.Round(CurrentContext.StartupX +
+                                                      (_dataModel.HorizontalDistance.GetValueOrDefault() *
+                                                       Math.Cos(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 3);
 
-                        _dataModel.X = Math.Round(CurrentContext.DataList[CurrentContext.DataList.Count - 1].X +
-                                       (_dataModel.HorizontalDistance.GetValueOrDefault() *
-                                        Math.Cos(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 3);
+
+                            _dataModel.Y = Math.Round(CurrentContext.StartupY +
+                                                      (_dataModel.HorizontalDistance.GetValueOrDefault() *
+                                                       Math.Sin(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 3);
+                        }
+                        else
+                        {
+                            //вычисляем
+                            _dataModel.X = Math.Round(CurrentContext.DataList[CurrentContext.DataList.Count - 1].X +
+                                                      (_dataModel.HorizontalDistance.GetValueOrDefault() *
+                                                       Math.Cos(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 3);
+
+
+                            _dataModel.Y = Math.Round(CurrentContext.DataList[CurrentContext.DataList.Count - 1].Y +
+                                                      (_dataModel.HorizontalDistance.GetValueOrDefault() *
+                                                       Math.Sin(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 3);
+                        }
 
                         _dataModel.VerticalDistance = _dataModel.Height ?? Math.Round(Math.Sqrt(Math.Pow(_dataModel.SlopeDistance.GetValueOrDefault(), 2) - Math.Pow(_dataModel.HorizontalDistance.GetValueOrDefault(), 2)), 3);
                     }
@@ -180,26 +189,26 @@ namespace GraduationProject.Views
         private void Fork_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ForkBtDevice = (sender as ComboBox)?.SelectedItem as BluetoothDeviceInfo;
-            ParseForkStringToObject("$PHGF,SPC,2,ABC,*2B\n$PHGF,DIA,M,277,*2A");
-            //if (ForkBtDevice != null && BluetoothSecurity.PairRequest(ForkBtDevice.DeviceAddress, "1234"))
-            //{
-            //    if (ForkBtDevice.Authenticated)
-            //    {
-            //        ViewModel.ForkDeviceInfo = ForkBtDevice;
+            //ParseForkStringToObject("$PHGF,SPC,2,ABC,*2B\n$PHGF,DIA,M,277,*2A");
+            if (ForkBtDevice != null && BluetoothSecurity.PairRequest(ForkBtDevice.DeviceAddress, "1234"))
+            {
+                if (ForkBtDevice.Authenticated)
+                {
+                    ViewModel.ForkDeviceInfo = ForkBtDevice;
 
-            //        if (ViewModel.ForkDeviceInfo != null)
-            //        {
-            //            EllipseFork.Fill = Brushes.DarkGreen;
-            //        }
+                    if (ViewModel.ForkDeviceInfo != null)
+                    {
+                        EllipseFork.Fill = Brushes.DarkGreen;
+                    }
 
-            //        BluetoothForkClient.SetPin("1234");
-            //        BluetoothForkClient.BeginConnect(
-            //            ForkBtDevice.DeviceAddress,
-            //            BluetoothService.SerialPort,
-            //            ConnectToFork,
-            //            ForkBtDevice);
-            //    }
-            //}
+                    BluetoothForkClient.SetPin("1234");
+                    BluetoothForkClient.BeginConnect(
+                        ForkBtDevice.DeviceAddress,
+                        BluetoothService.SerialPort,
+                        ConnectToFork,
+                        ForkBtDevice);
+                }
+            }
         }
 
         private void ConnectToFork(IAsyncResult result)
@@ -401,6 +410,7 @@ namespace GraduationProject.Views
             var column = new DataGridTextColumn
             {
                 Header = "Диаметр №2",
+                FontSize = 20,
                 Binding = new Binding("DiameterTwo")
             };
 
