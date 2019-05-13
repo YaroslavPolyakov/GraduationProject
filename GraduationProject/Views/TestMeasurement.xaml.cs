@@ -32,7 +32,6 @@ namespace GraduationProject.Views
 
         private bool _isHasDiameterTwo;
         private bool _isMeasurable;
-        private bool _isOnlyDiameter;
         private DataModel _dataModel;
         private MeasureValueModel _selectMeasure;
 
@@ -133,36 +132,41 @@ namespace GraduationProject.Views
                     _dataModel.SlopeDistance = indexD1 == 0 ? null : CurrentContext.ToDoubleParse(arrayData[indexD1]);
                     _dataModel.Height = indexHt == 0 ? null : CurrentContext.ToDoubleParse(arrayData[indexHt]);
                     {
-                        if (CurrentContext.DataList.Count == 0)
+                        if (CurrentContext.DataList.Count == 0 && _selectMeasure.Id == 1)
+                        {
+                            _dataModel.X = CurrentContext.StartupX;
+                            _dataModel.Y = CurrentContext.StartupY;
+                        }
+                        else if (CurrentContext.DataList.Count == 0)
                         {
                             _dataModel.X = Math.Round(CurrentContext.StartupX +
                                                       (_dataModel.HorizontalDistance.GetValueOrDefault() *
-                                                       Math.Cos(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 3);
+                                                       Math.Cos(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 2);
 
 
                             _dataModel.Y = Math.Round(CurrentContext.StartupY +
                                                       (_dataModel.HorizontalDistance.GetValueOrDefault() *
-                                                       Math.Sin(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 3);
+                                                       Math.Sin(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 2);
                         }
                         else
                         {
-                            //вычисляем
                             _dataModel.X = Math.Round(CurrentContext.DataList[CurrentContext.DataList.Count - 1].X +
                                                       (_dataModel.HorizontalDistance.GetValueOrDefault() *
-                                                       Math.Cos(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 3);
+                                                       Math.Cos(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 2);
 
 
                             _dataModel.Y = Math.Round(CurrentContext.DataList[CurrentContext.DataList.Count - 1].Y +
                                                       (_dataModel.HorizontalDistance.GetValueOrDefault() *
-                                                       Math.Sin(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 3);
+                                                       Math.Sin(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 2);
                         }
 
-                        _dataModel.VerticalDistance = _dataModel.Height ?? Math.Round(Math.Sqrt(Math.Pow(_dataModel.SlopeDistance.GetValueOrDefault(), 2) - Math.Pow(_dataModel.HorizontalDistance.GetValueOrDefault(), 2)), 3);
+                        _dataModel.VerticalDistance = _dataModel.Height ?? Math.Round(Math.Sqrt(Math.Pow(_dataModel.SlopeDistance.GetValueOrDefault(), 2) - Math.Pow(_dataModel.HorizontalDistance.GetValueOrDefault(), 2)), 2);
                     }
 
                     if (_selectMeasure.Id != 1)
                     {
-                        if (_dataModel.DiameterTwo != 0 && _isHasDiameterTwo)
+                        //_dataModel.DiameterTwo != 0
+                        if (_dataModel.DiameterTwo != null && _isHasDiameterTwo)
                         {
                             ViewModel.Measurements.Add(_dataModel);
                             CurrentContext.DataList.Add(_dataModel);
@@ -271,9 +275,10 @@ namespace GraduationProject.Views
             }
             if (_dataModel.Azimuth != null || _dataModel.Height != null)
             {
-                if (_isHasDiameterTwo && _dataModel.DiameterOne != 0 && _selectMeasure.Id != 1)
+                //было  _dataModel.DiameterOne != 0
+                if (_isHasDiameterTwo && _dataModel.DiameterOne != null && _selectMeasure.Id != 1)
                 {
-                    _dataModel.DiameterTwo = dia;
+                    _dataModel.DiameterTwo = dia / 10;
                     ViewModel.Measurements.Add(_dataModel);
                     CurrentContext.DataList.Add(_dataModel);
                     _dataModel = null;
@@ -281,7 +286,7 @@ namespace GraduationProject.Views
                 else
                 {
                     _dataModel.Species = species;
-                    _dataModel.DiameterOne = dia;
+                    _dataModel.DiameterOne = dia / 10;
 
                     if (!_isHasDiameterTwo)
                     {
@@ -293,14 +298,15 @@ namespace GraduationProject.Views
             }
             else
             {
-                if (_isHasDiameterTwo && _dataModel.DiameterOne != 0 && _selectMeasure.Id != 1)
+                //_dataModel.DiameterOne != 0
+                if (_isHasDiameterTwo && _dataModel.DiameterOne != null && _selectMeasure.Id != 1)
                 {
-                    _dataModel.DiameterTwo = dia;
+                    _dataModel.DiameterTwo = dia / 10;
                 }
                 else
                 {
                     _dataModel.Species = species;
-                    _dataModel.DiameterOne = dia;
+                    _dataModel.DiameterOne = dia / 10;
                 }
             }
         }
