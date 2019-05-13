@@ -32,6 +32,7 @@ namespace GraduationProject.Views
 
         private bool _isHasDiameterTwo;
         private bool _isMeasurable;
+        private bool _isOnlyDiameter;
         private DataModel _dataModel;
         private MeasureValueModel _selectMeasure;
 
@@ -261,6 +262,13 @@ namespace GraduationProject.Views
                 };
             }
 
+            if (_selectMeasure.Id == 5)
+            {
+                ViewModel.Measurements.Add(_dataModel);
+                CurrentContext.DataList.Add(_dataModel);
+                _dataModel = null;
+                return;
+            }
             if (_dataModel.Azimuth != null || _dataModel.Height != null)
             {
                 if (_isHasDiameterTwo && _dataModel.DiameterOne != 0 && _selectMeasure.Id != 1)
@@ -314,7 +322,7 @@ namespace GraduationProject.Views
 
             if (saveFileDialog1.ShowDialog() == true)
             {
-                using (var sw = new StreamWriter(saveFileDialog1.OpenFile(), System.Text.Encoding.Default))
+                using (var sw = new StreamWriter(saveFileDialog1.OpenFile(), Encoding.Default))
                 {
                     sw.Write(stringBuilder.ToString());
                     sw.Close();
@@ -399,9 +407,9 @@ namespace GraduationProject.Views
 
         private bool CheckMessage(string message, string[] arrayData)
         {
-            return message.Contains("HV") && message.Contains("D") && arrayData.Length >= 10 && _selectMeasure != null && !_isMeasurable
+            return message.Contains("HV") && message.Contains("D") && arrayData.Length >= 10 && _selectMeasure != null && !_isMeasurable && _selectMeasure.Id != 5
                 ? true
-                : message.Contains("HT") && _selectMeasure != null && _isMeasurable ? true : false;
+                : message.Contains("HT") && _selectMeasure != null && _isMeasurable && _selectMeasure.Id != 5 ? true : false;
         }
 
         private void CheckBoxDiameter_Checked(object sender, RoutedEventArgs e)
