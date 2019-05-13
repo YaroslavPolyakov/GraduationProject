@@ -60,7 +60,7 @@
         <StackPanel Margin="0,80" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
             <TextBlock Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" Text="Режим" />
             <ComboBox Margin="40,0,0,0"  Style="{StaticResource MaterialDesignComboBox}" HorizontalContentAlignment="Center" HorizontalAlignment="Right"
-                      MinWidth="200" MaxWidth="200" FontSize="22" ItemsSource="{Binding MeasureValues}" SelectedItem="{Binding SelectMeasure}" SelectionChanged="Selector_OnSelectionChanged">
+                      MinWidth="200" MaxWidth="200" FontSize="22" ItemsSource="{Binding MeasureValues}" SelectedIndex="0" SelectedItem="{Binding SelectMeasure}" SelectionChanged="Selector_OnSelectionChanged">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>

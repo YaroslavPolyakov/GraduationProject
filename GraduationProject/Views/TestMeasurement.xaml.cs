@@ -16,6 +16,7 @@ using InTheHand.Net.Sockets;
 using InTheHand.Net.Bluetooth;
 using GraduationProject.Models;
 using Microsoft.Win32;
+using System.Collections.Generic;
 
 namespace GraduationProject.Views
 {
@@ -451,80 +452,112 @@ namespace GraduationProject.Views
 
         private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_selectMeasure != null)
+            if (DataGrid != null)
             {
-                //удаление предыдущих
-                foreach (var itemColumn in _selectMeasure.TemplateColumns)
+                if (DataGrid.Items.Count != 0)
                 {
-                    var columnForRemove = DataGrid.Columns.FirstOrDefault(x => x.Header?.ToString() == itemColumn.Name);
+                    var stringBuilder = new StringBuilder();
+                    stringBuilder.AppendLine("ID,HV,Meter,Fut,D,D1,F,ML,HT,ControlSumm");
 
-                    if (columnForRemove != null)
+                    foreach (var item in ViewModel.Measurements)
                     {
-                        DataGrid.Columns.RemoveAt(columnForRemove.DisplayIndex);
+                        stringBuilder.AppendLine(item.ToString());
                     }
-                }
-            }
-            ViewModel.SelectMeasure = (sender as ComboBox)?.SelectedItem as MeasureValueModel;
-            _selectMeasure = ViewModel.SelectMeasure;
 
-            if (_selectMeasure?.TemplateColumns != null)
-            {
-                foreach (var itemTemplateColumn in _selectMeasure.TemplateColumns)
-                {
-                    var column = new DataGridTextColumn
+                    var saveFileDialog1 = new SaveFileDialog
                     {
-                        Header = itemTemplateColumn.Name,
-                        FontSize = 20,
-                        Binding = new Binding(itemTemplateColumn.BindingName)
+                        Filter = "СSV (*.csv)|*.csv"
                     };
 
-                    DataGrid.Columns.Add(column);
+                    if (saveFileDialog1.ShowDialog() == true)
+                    {
+                        using (var sw = new StreamWriter(saveFileDialog1.OpenFile(), Encoding.Default))
+                        {
+                            sw.Write(stringBuilder.ToString());
+                            sw.Close();
+                        }
+
+                        CurrentContext.DataList = new List<DataModel>();
+                        ViewModel.Measurements = new ObservableCollection<DataModel>();
+                        CurrentContext.GlobalId = 0;
+                    }
                 }
 
-                if (_selectMeasure.Name == "ГИ")
+                if (_selectMeasure != null)
                 {
-                    DiameterDockPanel.Visibility = Visibility.Hidden;
-                    HeightDockPanel.Visibility = Visibility.Hidden;
-                    DiameterButton.IsChecked = false;
-                    HeightButton.IsChecked = false;
-                    DiameterButton.IsEnabled = true;
-                    HeightButton.IsEnabled = true;
+                    //удаление предыдущих
+                    foreach (var itemColumn in _selectMeasure.TemplateColumns)
+                    {
+                        var columnForRemove = DataGrid.Columns.FirstOrDefault(x => x.Header?.ToString() == itemColumn.Name);
+
+                        if (columnForRemove != null)
+                        {
+                            DataGrid.Columns.RemoveAt(columnForRemove.DisplayIndex);
+                        }
+                    }
                 }
-                else if (_selectMeasure.Name == "РКП")
+                ViewModel.SelectMeasure = (sender as ComboBox)?.SelectedItem as MeasureValueModel;
+                _selectMeasure = ViewModel.SelectMeasure;
+
+                if (_selectMeasure?.TemplateColumns != null)
                 {
-                    DiameterDockPanel.Visibility = Visibility.Visible;
-                    HeightDockPanel.Visibility = Visibility.Visible;
-                    DiameterButton.IsChecked = false;
-                    HeightButton.IsChecked = false;
-                    DiameterButton.IsEnabled = true;
-                    HeightButton.IsEnabled = true;
-                }
-                else if (_selectMeasure.Name == "ППП")
-                {
-                    DiameterDockPanel.Visibility = Visibility.Visible;
-                    HeightDockPanel.Visibility = Visibility.Visible;
-                    DiameterButton.IsChecked = true;
-                    DiameterButton.IsEnabled = false;
-                    HeightButton.IsChecked = false;
-                    HeightButton.IsEnabled = true;
-                }
-                else if (_selectMeasure.Name == "ЗВ")
-                {
-                    DiameterDockPanel.Visibility = Visibility.Visible;
-                    HeightDockPanel.Visibility = Visibility.Visible;
-                    DiameterButton.IsChecked = false;
-                    DiameterButton.IsEnabled = false;
-                    HeightButton.IsChecked = true;
-                    HeightButton.IsEnabled = false;
-                }
-                else if (_selectMeasure.Name == "ЗД")
-                {
-                    DiameterDockPanel.Visibility = Visibility.Visible;
-                    HeightDockPanel.Visibility = Visibility.Hidden;
-                    DiameterButton.IsChecked = false;
-                    DiameterButton.IsEnabled = false;
-                    HeightButton.IsChecked = false;
-                    HeightButton.IsEnabled = false;
+                    foreach (var itemTemplateColumn in _selectMeasure.TemplateColumns)
+                    {
+                        var column = new DataGridTextColumn
+                        {
+                            Header = itemTemplateColumn.Name,
+                            FontSize = 20,
+                            Binding = new Binding(itemTemplateColumn.BindingName)
+                        };
+
+                        DataGrid.Columns.Add(column);
+                    }
+
+                    if (_selectMeasure.Name == "ГИ")
+                    {
+                        DiameterDockPanel.Visibility = Visibility.Hidden;
+                        HeightDockPanel.Visibility = Visibility.Hidden;
+                        DiameterButton.IsChecked = false;
+                        HeightButton.IsChecked = false;
+                        DiameterButton.IsEnabled = true;
+                        HeightButton.IsEnabled = true;
+                    }
+                    else if (_selectMeasure.Name == "РКП")
+                    {
+                        DiameterDockPanel.Visibility = Visibility.Visible;
+                        HeightDockPanel.Visibility = Visibility.Visible;
+                        DiameterButton.IsChecked = false;
+                        HeightButton.IsChecked = false;
+                        DiameterButton.IsEnabled = true;
+                        HeightButton.IsEnabled = true;
+                    }
+                    else if (_selectMeasure.Name == "ППП")
+                    {
+                        DiameterDockPanel.Visibility = Visibility.Visible;
+                        HeightDockPanel.Visibility = Visibility.Visible;
+                        DiameterButton.IsChecked = true;
+                        DiameterButton.IsEnabled = false;
+                        HeightButton.IsChecked = false;
+                        HeightButton.IsEnabled = true;
+                    }
+                    else if (_selectMeasure.Name == "ЗВ")
+                    {
+                        DiameterDockPanel.Visibility = Visibility.Visible;
+                        HeightDockPanel.Visibility = Visibility.Visible;
+                        DiameterButton.IsChecked = false;
+                        DiameterButton.IsEnabled = false;
+                        HeightButton.IsChecked = true;
+                        HeightButton.IsEnabled = false;
+                    }
+                    else if (_selectMeasure.Name == "ЗД")
+                    {
+                        DiameterDockPanel.Visibility = Visibility.Visible;
+                        HeightDockPanel.Visibility = Visibility.Hidden;
+                        DiameterButton.IsChecked = false;
+                        DiameterButton.IsEnabled = false;
+                        HeightButton.IsChecked = false;
+                        HeightButton.IsEnabled = false;
+                    }
                 }
             }
         }
