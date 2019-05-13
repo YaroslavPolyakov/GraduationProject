@@ -500,13 +500,22 @@ namespace GraduationProject.Views
                     HeightButton.IsChecked = false;
                     HeightButton.IsEnabled = true;
                 }
-                else if (_selectMeasure.Name == "ВПП")
+                else if (_selectMeasure.Name == "ЗВ")
                 {
                     DiameterDockPanel.Visibility = Visibility.Visible;
                     HeightDockPanel.Visibility = Visibility.Visible;
                     DiameterButton.IsChecked = false;
                     DiameterButton.IsEnabled = false;
                     HeightButton.IsChecked = true;
+                    HeightButton.IsEnabled = false;
+                }
+                else if (_selectMeasure.Name == "ЗД")
+                {
+                    DiameterDockPanel.Visibility = Visibility.Visible;
+                    HeightDockPanel.Visibility = Visibility.Hidden;
+                    DiameterButton.IsChecked = false;
+                    DiameterButton.IsEnabled = false;
+                    HeightButton.IsChecked = false;
                     HeightButton.IsEnabled = false;
                 }
             }
