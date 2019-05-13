@@ -20,9 +20,9 @@
 
         public double? Bias { get; set; }
 
-        public int DiameterOne { get; set; }
+        public double? DiameterOne { get; set; }
 
-        public int DiameterTwo { get; set; }
+        public double? DiameterTwo { get; set; }
 
         public string Species { get; set; }
 
