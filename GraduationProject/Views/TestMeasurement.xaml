@@ -88,7 +88,11 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
             <Button Content="Сохранить в CSV" Width="Auto" Height="Auto" Margin="0,10,10,10"
-                    Click="ButtonBase_OnClick" />
+                    Click="ButtonSave_OnClick" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <Button Content="Открыть CSV" Width="Auto" Height="Auto" Margin="0,10,160,10"
+                    Click="ButtonOpen_OnClick" />
         </StackPanel>
 
         <StackPanel Margin="10,50,10,10" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">

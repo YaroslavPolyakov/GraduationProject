@@ -29,7 +29,7 @@
         public override string ToString()
         {
             return
-                $"{Id},{X},{Y},{HorizontalDistance},{VerticalDistance},{Azimuth},{Bias},{DiameterOne},{DiameterTwo},{Species},{SlopeDistance},{Height}";
+                $"{Id},{X},{Y},{HorizontalDistance},{VerticalDistance},{SlopeDistance},{Azimuth},{Bias},{DiameterOne},{DiameterTwo},{Species}";
         }
     }
 }

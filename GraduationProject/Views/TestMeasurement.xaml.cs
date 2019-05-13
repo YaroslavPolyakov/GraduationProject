@@ -312,29 +312,71 @@ namespace GraduationProject.Views
             }
         }
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
         {
             var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("ID,HV,Meter,Fut,D,D1,F,ML,HT,ControlSumm");
+            stringBuilder.AppendLine("Id,X,Y,HorizontalDistance,VerticalDistance,SlopeDistance,Azimuth,Bias,DiameterOne,DiameterTwo,Species");
 
             foreach (var item in ViewModel.Measurements)
             {
                 stringBuilder.AppendLine(item.ToString());
             }
 
-            var saveFileDialog1 = new SaveFileDialog
+            var saveFileDialog = new SaveFileDialog
             {
                 Filter = "СSV (*.csv)|*.csv"
             };
 
-            if (saveFileDialog1.ShowDialog() == true)
+            if (saveFileDialog.ShowDialog() == true)
             {
-                using (var sw = new StreamWriter(saveFileDialog1.OpenFile(), Encoding.Default))
+                using (var sw = new StreamWriter(saveFileDialog.OpenFile(), Encoding.Default))
                 {
                     sw.Write(stringBuilder.ToString());
                     sw.Close();
                 }
             }
+        }
+
+        private void ButtonOpen_OnClick(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "СSV (*.csv)|*.csv"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string filename = openFileDialog.FileName;
+                var dataList = File.ReadAllLines(filename)
+                    .Skip(1)
+                    .Select(x => x.Split(','))
+                    .Select(x => new DataModel
+                    {
+                        Id = x[0] != "" ? int.Parse(x[0]) : 0,
+                        X = x[1] != "" ? int.Parse(x[1]) : 0,
+                        Y = x[2] != "" ? double.Parse(x[2]) : 0,
+                        HorizontalDistance = x[3] != "" ? double.Parse(x[3]) : 0,
+                        VerticalDistance = x[4] != "" ? double.Parse(x[4]) : 0,
+                        SlopeDistance = x[5] != "" ? double.Parse(x[5]) : 0,
+                        Azimuth = x[6] != "" ? double.Parse(x[6]) : 0,
+                        Bias = x[7] != "" ? double.Parse(x[7]) : 0,
+                        DiameterOne = x[8] != "" ? double.Parse(x[8]) : 0,
+                        DiameterTwo = x[9] != "" ? double.Parse(x[9]) : 0,
+                        Species = x[10]
+                    }).ToList();
+            }
+            //Доделать
+            //foreach (var itemTemplateColumn in _selectMeasure.TemplateColumns)
+            //{
+            //    var column = new DataGridTextColumn
+            //    {
+            //        Header = itemTemplateColumn.Name,
+            //        FontSize = 20,
+            //        Binding = new Binding(itemTemplateColumn.BindingName)
+            //    };
+
+            //    DataGrid.Columns.Add(column);
+            //}
         }
 
         private void SetStartupSettings()
@@ -463,7 +505,7 @@ namespace GraduationProject.Views
                 if (DataGrid.Items.Count != 0)
                 {
                     var stringBuilder = new StringBuilder();
-                    stringBuilder.AppendLine("ID,HV,Meter,Fut,D,D1,F,ML,HT,ControlSumm");
+                    stringBuilder.AppendLine("Id,X,Y,HorizontalDistance,VerticalDistance,SlopeDistance,Azimuth,Bias,DiameterOne,DiameterTwo,Species");
 
                     foreach (var item in ViewModel.Measurements)
                     {
