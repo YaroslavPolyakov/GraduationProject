@@ -1,4 +1,7 @@
-﻿namespace GraduationProject.Models
+﻿using System.Linq;
+using System.Windows;
+
+namespace GraduationProject.Models
 {
     public class DataModel
     {
@@ -25,6 +28,29 @@
         public double? DiameterTwo { get; set; }
 
         public string Species { get; set; }
+
+        private int? _treeNumber;
+
+        public int? TreeNumber
+        {
+            get => _treeNumber;
+
+            set
+            {
+                foreach(var elem in CurrentContext.DataList)
+                {
+                    if (elem.TreeNumber == value)
+                    {
+                        _treeNumber = null;
+                        MessageBox.Show("Дерево с таким номером уже существует");
+
+                        return;
+                    }
+                }
+
+                _treeNumber = value;
+            }
+        }
 
         public override string ToString()
         {

@@ -195,26 +195,26 @@ namespace GraduationProject.Views
         private void Fork_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ForkBtDevice = (sender as ComboBox)?.SelectedItem as BluetoothDeviceInfo;
-            //ParseForkStringToObject("$PHGF,SPC,2,ABC,*2B\n$PHGF,DIA,M,277,*2A");
-            if (ForkBtDevice != null && BluetoothSecurity.PairRequest(ForkBtDevice.DeviceAddress, "1234"))
-            {
-                if (ForkBtDevice.Authenticated)
-                {
-                    ViewModel.ForkDeviceInfo = ForkBtDevice;
+            ParseForkStringToObject("$PHGF,SPC,2,ABC,*2B\n$PHGF,DIA,M,277,*2A");
+            //if (ForkBtDevice != null && BluetoothSecurity.PairRequest(ForkBtDevice.DeviceAddress, "1234"))
+            //{
+            //    if (ForkBtDevice.Authenticated)
+            //    {
+            //        ViewModel.ForkDeviceInfo = ForkBtDevice;
 
-                    if (ViewModel.ForkDeviceInfo != null)
-                    {
-                        EllipseFork.Fill = Brushes.DarkGreen;
-                    }
+            //        if (ViewModel.ForkDeviceInfo != null)
+            //        {
+            //            EllipseFork.Fill = Brushes.DarkGreen;
+            //        }
 
-                    BluetoothForkClient.SetPin("1234");
-                    BluetoothForkClient.BeginConnect(
-                        ForkBtDevice.DeviceAddress,
-                        BluetoothService.SerialPort,
-                        ConnectToFork,
-                        ForkBtDevice);
-                }
-            }
+            //        BluetoothForkClient.SetPin("1234");
+            //        BluetoothForkClient.BeginConnect(
+            //            ForkBtDevice.DeviceAddress,
+            //            BluetoothService.SerialPort,
+            //            ConnectToFork,
+            //            ForkBtDevice);
+            //    }
+            //}
         }
 
         private void ConnectToFork(IAsyncResult result)
