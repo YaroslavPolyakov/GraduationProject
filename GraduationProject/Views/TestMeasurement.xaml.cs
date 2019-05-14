@@ -393,11 +393,20 @@ namespace GraduationProject.Views
                 Timer.Start();
                 ViewModel.Sigma = 0;
                 ViewModel.HeightLevelEyes = 0;
+                OpenDialog();
             }
             catch (Exception)
             {
                 MessageBox.Show("Bluetooth не включен.");
                 throw;
+            }
+        }
+
+        private void OpenDialog()
+        {
+            if (MessageBox.Show("Загрузить последние измерения?", "Title", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                //
             }
         }
 
