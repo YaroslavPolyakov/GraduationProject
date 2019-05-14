@@ -312,7 +312,7 @@ namespace GraduationProject.Views
             }
         }
 
-        private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
+        private void SaveOnClick(bool isDeleteData)
         {
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine("Id,X,Y,HorizontalDistance,VerticalDistance,SlopeDistance,Azimuth,Bias,DiameterOne,DiameterTwo,Species");
@@ -329,16 +329,33 @@ namespace GraduationProject.Views
 
             if (saveFileDialog.ShowDialog() == true)
             {
+                var fileName = saveFileDialog.FileName;
+                saveFileDialog.FileName = saveFileDialog.FileName.Insert(fileName.Length - 4, "__" + _selectMeasure?.Name ?? "");
                 using (var sw = new StreamWriter(saveFileDialog.OpenFile(), Encoding.Default))
                 {
                     sw.Write(stringBuilder.ToString());
                     sw.Close();
                 }
             }
+
+            if (isDeleteData)
+            {
+                CurrentContext.DataList = new List<DataModel>();
+                ViewModel.Measurements = new ObservableCollection<DataModel>();
+                CurrentContext.GlobalId = 0;
+            }
         }
 
-        private void ButtonOpen_OnClick(object sender, RoutedEventArgs e)
+        private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
         {
+            SaveOnClick(false);
+        }
+
+        private void OpenOnClick()
+        {
+            CurrentContext.DataList = new List<DataModel>();
+            ViewModel.Measurements = new ObservableCollection<DataModel>();
+
             var openFileDialog = new OpenFileDialog
             {
                 Filter = "СSV (*.csv)|*.csv"
@@ -346,14 +363,18 @@ namespace GraduationProject.Views
 
             if (openFileDialog.ShowDialog() == true)
             {
-                string filename = openFileDialog.FileName;
-                var dataList = File.ReadAllLines(filename)
+                string fileName = openFileDialog.FileName;
+                string searchString = "__";
+                int indexOfStart = fileName.IndexOf(searchString) + 2;
+                var nameMode = fileName.Substring(indexOfStart);
+                nameMode = nameMode.Substring(0, nameMode.Length - 4);
+                var dataList = File.ReadAllLines(openFileDialog.FileName)
                     .Skip(1)
                     .Select(x => x.Split(','))
                     .Select(x => new DataModel
                     {
                         Id = x[0] != "" ? int.Parse(x[0]) : 0,
-                        X = x[1] != "" ? int.Parse(x[1]) : 0,
+                        X = x[1] != "" ? double.Parse(x[1]) : 0,
                         Y = x[2] != "" ? double.Parse(x[2]) : 0,
                         HorizontalDistance = x[3] != "" ? double.Parse(x[3]) : 0,
                         VerticalDistance = x[4] != "" ? double.Parse(x[4]) : 0,
@@ -364,19 +385,29 @@ namespace GraduationProject.Views
                         DiameterTwo = x[9] != "" ? double.Parse(x[9]) : 0,
                         Species = x[10]
                     }).ToList();
-            }
-            //Доделать
-            //foreach (var itemTemplateColumn in _selectMeasure.TemplateColumns)
-            //{
-            //    var column = new DataGridTextColumn
-            //    {
-            //        Header = itemTemplateColumn.Name,
-            //        FontSize = 20,
-            //        Binding = new Binding(itemTemplateColumn.BindingName)
-            //    };
 
-            //    DataGrid.Columns.Add(column);
-            //}
+                if (CurrentContext.MeasureValues.FirstOrDefault(x => x.Name == nameMode) == null || dataList.Count == 0)
+                {
+                    MessageBox.Show("Файл имеет неверный формат");
+                    return;
+                }
+
+                DeleteOldColumns();
+
+                _selectMeasure = CurrentContext.MeasureValues.FirstOrDefault(x => x.Name == nameMode);
+                ViewModel.SelectMeasure = _selectMeasure;
+
+                AddNewColumns();
+
+                CurrentContext.DataList = dataList;
+                ViewModel.Measurements = new ObservableCollection<DataModel>(dataList);
+                CurrentContext.GlobalId = CurrentContext.DataList.Max(x => x.Id);
+            }
+        }
+
+        private void ButtonOpen_OnClick(object sender, RoutedEventArgs e)
+        {
+            OpenOnClick();
         }
 
         private void SetStartupSettings()
@@ -393,6 +424,7 @@ namespace GraduationProject.Views
                 Timer.Start();
                 ViewModel.Sigma = 0;
                 ViewModel.HeightLevelEyes = 0;
+                SelectModeComboBox.SelectedItem = CurrentContext.MeasureValues.FirstOrDefault();
             }
             catch (Exception)
             {
@@ -504,108 +536,95 @@ namespace GraduationProject.Views
             {
                 if (DataGrid.Items.Count != 0)
                 {
-                    var stringBuilder = new StringBuilder();
-                    stringBuilder.AppendLine("Id,X,Y,HorizontalDistance,VerticalDistance,SlopeDistance,Azimuth,Bias,DiameterOne,DiameterTwo,Species");
-
-                    foreach (var item in ViewModel.Measurements)
-                    {
-                        stringBuilder.AppendLine(item.ToString());
-                    }
-
-                    var saveFileDialog1 = new SaveFileDialog
-                    {
-                        Filter = "СSV (*.csv)|*.csv"
-                    };
-
-                    if (saveFileDialog1.ShowDialog() == true)
-                    {
-                        using (var sw = new StreamWriter(saveFileDialog1.OpenFile(), Encoding.Default))
-                        {
-                            sw.Write(stringBuilder.ToString());
-                            sw.Close();
-                        }
-
-                        CurrentContext.DataList = new List<DataModel>();
-                        ViewModel.Measurements = new ObservableCollection<DataModel>();
-                        CurrentContext.GlobalId = 0;
-                    }
+                    SaveOnClick(true);
                 }
 
-                if (_selectMeasure != null)
-                {
-                    //удаление предыдущих
-                    foreach (var itemColumn in _selectMeasure.TemplateColumns)
-                    {
-                        var columnForRemove = DataGrid.Columns.FirstOrDefault(x => x.Header?.ToString() == itemColumn.Name);
+                DeleteOldColumns();
 
-                        if (columnForRemove != null)
-                        {
-                            DataGrid.Columns.RemoveAt(columnForRemove.DisplayIndex);
-                        }
-                    }
-                }
                 ViewModel.SelectMeasure = (sender as ComboBox)?.SelectedItem as MeasureValueModel;
                 _selectMeasure = ViewModel.SelectMeasure;
 
-                if (_selectMeasure?.TemplateColumns != null)
+                AddNewColumns();
+            }
+        }
+
+        private void DeleteOldColumns()
+        {
+            if (_selectMeasure != null)
+            {
+                //удаление предыдущих
+                foreach (var itemColumn in _selectMeasure.TemplateColumns)
                 {
-                    foreach (var itemTemplateColumn in _selectMeasure.TemplateColumns)
-                    {
-                        var column = new DataGridTextColumn
-                        {
-                            Header = itemTemplateColumn.Name,
-                            FontSize = 20,
-                            Binding = new Binding(itemTemplateColumn.BindingName)
-                        };
+                    var columnForRemove = DataGrid.Columns.FirstOrDefault(x => x.Header?.ToString() == itemColumn.Name);
 
-                        DataGrid.Columns.Add(column);
+                    if (columnForRemove != null)
+                    {
+                        DataGrid.Columns.RemoveAt(columnForRemove.DisplayIndex);
                     }
+                }
+            }
+        }
 
-                    if (_selectMeasure.Name == "ГИ")
+        private void AddNewColumns()
+        {
+            if (_selectMeasure?.TemplateColumns != null)
+            {
+                foreach (var itemTemplateColumn in _selectMeasure.TemplateColumns)
+                {
+                    var column = new DataGridTextColumn
                     {
-                        DiameterDockPanel.Visibility = Visibility.Hidden;
-                        HeightDockPanel.Visibility = Visibility.Hidden;
-                        DiameterButton.IsChecked = false;
-                        HeightButton.IsChecked = false;
-                        DiameterButton.IsEnabled = true;
-                        HeightButton.IsEnabled = true;
-                    }
-                    else if (_selectMeasure.Name == "РКП")
-                    {
-                        DiameterDockPanel.Visibility = Visibility.Visible;
-                        HeightDockPanel.Visibility = Visibility.Visible;
-                        DiameterButton.IsChecked = false;
-                        HeightButton.IsChecked = false;
-                        DiameterButton.IsEnabled = true;
-                        HeightButton.IsEnabled = true;
-                    }
-                    else if (_selectMeasure.Name == "ППП")
-                    {
-                        DiameterDockPanel.Visibility = Visibility.Visible;
-                        HeightDockPanel.Visibility = Visibility.Visible;
-                        DiameterButton.IsChecked = true;
-                        DiameterButton.IsEnabled = false;
-                        HeightButton.IsChecked = false;
-                        HeightButton.IsEnabled = true;
-                    }
-                    else if (_selectMeasure.Name == "ЗВ")
-                    {
-                        DiameterDockPanel.Visibility = Visibility.Visible;
-                        HeightDockPanel.Visibility = Visibility.Visible;
-                        DiameterButton.IsChecked = false;
-                        DiameterButton.IsEnabled = false;
-                        HeightButton.IsChecked = true;
-                        HeightButton.IsEnabled = false;
-                    }
-                    else if (_selectMeasure.Name == "ЗД")
-                    {
-                        DiameterDockPanel.Visibility = Visibility.Visible;
-                        HeightDockPanel.Visibility = Visibility.Hidden;
-                        DiameterButton.IsChecked = false;
-                        DiameterButton.IsEnabled = false;
-                        HeightButton.IsChecked = false;
-                        HeightButton.IsEnabled = false;
-                    }
+                        Header = itemTemplateColumn.Name,
+                        FontSize = 20,
+                        Binding = new Binding(itemTemplateColumn.BindingName)
+                    };
+
+                    DataGrid.Columns.Add(column);
+                }
+
+                if (_selectMeasure.Name == "ГИ")
+                {
+                    DiameterDockPanel.Visibility = Visibility.Hidden;
+                    HeightDockPanel.Visibility = Visibility.Hidden;
+                    DiameterButton.IsChecked = false;
+                    HeightButton.IsChecked = false;
+                    DiameterButton.IsEnabled = true;
+                    HeightButton.IsEnabled = true;
+                }
+                else if (_selectMeasure.Name == "РКП")
+                {
+                    DiameterDockPanel.Visibility = Visibility.Visible;
+                    HeightDockPanel.Visibility = Visibility.Visible;
+                    DiameterButton.IsChecked = false;
+                    HeightButton.IsChecked = false;
+                    DiameterButton.IsEnabled = true;
+                    HeightButton.IsEnabled = true;
+                }
+                else if (_selectMeasure.Name == "ППП")
+                {
+                    DiameterDockPanel.Visibility = Visibility.Visible;
+                    HeightDockPanel.Visibility = Visibility.Visible;
+                    DiameterButton.IsChecked = true;
+                    DiameterButton.IsEnabled = false;
+                    HeightButton.IsChecked = false;
+                    HeightButton.IsEnabled = true;
+                }
+                else if (_selectMeasure.Name == "ЗВ")
+                {
+                    DiameterDockPanel.Visibility = Visibility.Visible;
+                    HeightDockPanel.Visibility = Visibility.Visible;
+                    DiameterButton.IsChecked = false;
+                    DiameterButton.IsEnabled = false;
+                    HeightButton.IsChecked = true;
+                    HeightButton.IsEnabled = false;
+                }
+                else if (_selectMeasure.Name == "ЗД")
+                {
+                    DiameterDockPanel.Visibility = Visibility.Visible;
+                    HeightDockPanel.Visibility = Visibility.Hidden;
+                    DiameterButton.IsChecked = false;
+                    DiameterButton.IsEnabled = false;
+                    HeightButton.IsChecked = false;
+                    HeightButton.IsEnabled = false;
                 }
             }
         }
