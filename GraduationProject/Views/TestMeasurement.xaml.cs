@@ -40,6 +40,11 @@ namespace GraduationProject.Views
         {
             InitializeComponent();
             SetStartupSettings();
+            OpenDialog();
+            if (ViewModel.SelectMeasure == null)
+            {
+                SelectModeComboBox.SelectedItem = CurrentContext.MeasureValues.FirstOrDefault();
+            }
         }
 
         private void Device_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -388,7 +393,7 @@ namespace GraduationProject.Views
 
                 if (CurrentContext.MeasureValues.FirstOrDefault(x => x.Name == nameMode) == null || dataList.Count == 0)
                 {
-                    MessageBox.Show("Файл имеет неверный формат");
+                    MessageBox.Show("Ошибка. Не удалось открыть файл");
                     return;
                 }
 
@@ -397,7 +402,7 @@ namespace GraduationProject.Views
                 _selectMeasure = CurrentContext.MeasureValues.FirstOrDefault(x => x.Name == nameMode);
                 ViewModel.SelectMeasure = _selectMeasure;
 
-                AddNewColumns();
+                //AddNewColumns();
 
                 CurrentContext.DataList = dataList;
                 ViewModel.Measurements = new ObservableCollection<DataModel>(dataList);
@@ -424,12 +429,19 @@ namespace GraduationProject.Views
                 Timer.Start();
                 ViewModel.Sigma = 0;
                 ViewModel.HeightLevelEyes = 0;
-                SelectModeComboBox.SelectedItem = CurrentContext.MeasureValues.FirstOrDefault();
             }
             catch (Exception)
             {
                 MessageBox.Show("Bluetooth не включен.");
                 throw;
+            }
+        }
+
+        private void OpenDialog()
+        {
+            if (MessageBox.Show("Загрузить последние измерения?", "Title", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                OpenOnClick();
             }
         }
 
