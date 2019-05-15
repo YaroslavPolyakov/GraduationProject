@@ -45,6 +45,11 @@ namespace GraduationProject.Views
         {
             InitializeComponent();
             SetStartupSettings();
+            OpenDialog();
+            if (ViewModel.SelectMeasure == null)
+            {
+                SelectModeComboBox.SelectedItem = CurrentContext.MeasureValues.FirstOrDefault();
+            }
         }
 
         private void Device_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -296,10 +301,10 @@ namespace GraduationProject.Views
             _dataModel = null;
         }
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        private void SaveOnClick(bool isDeleteData)
         {
             var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("ID,HV,Meter,Fut,D,D1,F,ML,HT,ControlSumm");
+            stringBuilder.AppendLine("Id,X,Y,HorizontalDistance,VerticalDistance,SlopeDistance,Azimuth,Bias,DiameterOne,DiameterTwo,Species");
 
             foreach (var item in ViewModel.Measurements)
             {
@@ -313,12 +318,85 @@ namespace GraduationProject.Views
 
             if (saveFileDialog.ShowDialog() == true)
             {
-                using (var streamWriter = new StreamWriter(saveFileDialog.OpenFile(), Encoding.Default))
+                var fileName = saveFileDialog.FileName;
+                saveFileDialog.FileName = saveFileDialog.FileName.Insert(fileName.Length - 4, "__" + _selectMeasure?.Name ?? "");
+                using (var sw = new StreamWriter(saveFileDialog.OpenFile(), Encoding.Default))
                 {
-                    streamWriter.Write(stringBuilder.ToString());
-                    //???streamWriter.Close();
+                    sw.Write(stringBuilder.ToString());
+                    sw.Close();
                 }
             }
+
+            if (isDeleteData)
+            {
+                CurrentContext.DataList = new List<DataModel>();
+                ViewModel.Measurements = new ObservableCollection<DataModel>();
+                CurrentContext.GlobalId = 0;
+            }
+        }
+
+        private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
+        {
+            SaveOnClick(false);
+        }
+
+        private void OpenOnClick()
+        {
+            CurrentContext.DataList = new List<DataModel>();
+            ViewModel.Measurements = new ObservableCollection<DataModel>();
+
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "СSV (*.csv)|*.csv"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string fileName = openFileDialog.FileName;
+                string searchString = "__";
+                int indexOfStart = fileName.IndexOf(searchString) + 2;
+                var nameMode = fileName.Substring(indexOfStart);
+                nameMode = nameMode.Substring(0, nameMode.Length - 4);
+                var dataList = File.ReadAllLines(openFileDialog.FileName)
+                    .Skip(1)
+                    .Select(x => x.Split(','))
+                    .Select(x => new DataModel
+                    {
+                        Id = x[0] != "" ? int.Parse(x[0]) : 0,
+                        X = x[1] != "" ? double.Parse(x[1]) : 0,
+                        Y = x[2] != "" ? double.Parse(x[2]) : 0,
+                        HorizontalDistance = x[3] != "" ? double.Parse(x[3]) : 0,
+                        VerticalDistance = x[4] != "" ? double.Parse(x[4]) : 0,
+                        SlopeDistance = x[5] != "" ? double.Parse(x[5]) : 0,
+                        Azimuth = x[6] != "" ? double.Parse(x[6]) : 0,
+                        Bias = x[7] != "" ? double.Parse(x[7]) : 0,
+                        DiameterOne = x[8] != "" ? double.Parse(x[8]) : 0,
+                        DiameterTwo = x[9] != "" ? double.Parse(x[9]) : 0,
+                        Species = x[10]
+                    }).ToList();
+
+                if (CurrentContext.MeasureValues.FirstOrDefault(x => x.Name == nameMode) == null || dataList.Count == 0)
+                {
+                    MessageBox.Show("Ошибка. Не удалось открыть файл");
+                    return;
+                }
+
+                DeleteOldColumns();
+
+                _selectMeasure = CurrentContext.MeasureValues.FirstOrDefault(x => x.Name == nameMode);
+                ViewModel.SelectMeasure = _selectMeasure;
+
+                //AddNewColumns();
+
+                CurrentContext.DataList = dataList;
+                ViewModel.Measurements = new ObservableCollection<DataModel>(dataList);
+                CurrentContext.GlobalId = CurrentContext.DataList.Max(x => x.Id);
+            }
+        }
+
+        private void ButtonOpen_OnClick(object sender, RoutedEventArgs e)
+        {
+            OpenOnClick();
         }
 
         private void SetStartupSettings()
@@ -347,9 +425,9 @@ namespace GraduationProject.Views
 
         private void OpenDialog()
         {
-            if(MessageBox.Show("Загрузить последние измерения?", "Title", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Загрузить последние измерения?", "Title", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                //
+                OpenOnClick();
             }
         }
 
@@ -459,62 +537,50 @@ namespace GraduationProject.Views
             {
                 if (DataGrid.Items.Count != 0)
                 {
-                    var stringBuilder = new StringBuilder();
-                    stringBuilder.AppendLine("ID,HV,Meter,Fut,D,D1,F,ML,HT,ControlSumm");
-
-                    foreach (var item in ViewModel.Measurements)
-                    {
-                        stringBuilder.AppendLine(item.ToString());
-                    }
-
-                    var saveFileDialog = new SaveFileDialog
-                    {
-                        Filter = "СSV (*.csv)|*.csv"
-                    };
-
-                    if (saveFileDialog.ShowDialog() == true)
-                    {
-                        using (var streamWriter = new StreamWriter(saveFileDialog.OpenFile(), Encoding.Default))
-                        {
-                            streamWriter.Write(stringBuilder.ToString());
-                            streamWriter.Close();
-                        }
-
-                        CurrentContext.DataList = new List<DataModel>();
-                        ViewModel.Measurements = new ObservableCollection<DataModel>();
-                        CurrentContext.GlobalId = 0;
-                    }
+                    SaveOnClick(true);
                 }
 
-                if (_selectMeasure != null)
-                {
-                    //удаление предыдущих
-                    foreach (var itemColumn in _selectMeasure.TemplateColumns)
-                    {
-                        var columnForRemove = DataGrid.Columns.FirstOrDefault(x => x.Header?.ToString() == itemColumn.Name);
+                DeleteOldColumns();
 
-                        if (columnForRemove != null)
-                        {
-                            DataGrid.Columns.RemoveAt(columnForRemove.DisplayIndex);
-                        }
-                    }
-                }
                 ViewModel.SelectMeasure = (sender as ComboBox)?.SelectedItem as MeasureValueModel;
                 _selectMeasure = ViewModel.SelectMeasure;
 
-                if (_selectMeasure?.TemplateColumns != null)
-                {
-                    foreach (var itemTemplateColumn in _selectMeasure.TemplateColumns)
-                    {
-                        var column = new DataGridTextColumn
-                        {
-                            Header = itemTemplateColumn.Name,
-                            FontSize = 20,
-                            Binding = new Binding(itemTemplateColumn.BindingName)
-                        };
+                AddNewColumns();
+            }
+        }
 
-                        DataGrid.Columns.Add(column);
+        private void DeleteOldColumns()
+        {
+            if (_selectMeasure != null)
+            {
+                //удаление предыдущих
+                foreach (var itemColumn in _selectMeasure.TemplateColumns)
+                {
+                    var columnForRemove = DataGrid.Columns.FirstOrDefault(x => x.Header?.ToString() == itemColumn.Name);
+
+                    if (columnForRemove != null)
+                    {
+                        DataGrid.Columns.RemoveAt(columnForRemove.DisplayIndex);
                     }
+                }
+            }
+        }
+
+        private void AddNewColumns()
+        {
+            if (_selectMeasure?.TemplateColumns != null)
+            {
+                foreach (var itemTemplateColumn in _selectMeasure.TemplateColumns)
+                {
+                    var column = new DataGridTextColumn
+                    {
+                        Header = itemTemplateColumn.Name,
+                        FontSize = 20,
+                        Binding = new Binding(itemTemplateColumn.BindingName)
+                    };
+
+                    DataGrid.Columns.Add(column);
+                }
 
                     switch (_selectMeasure.Name)
                     {
