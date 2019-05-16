@@ -18,16 +18,12 @@ namespace GraduationProject
         {
             foreach (string arg in e.Args)
             {
-                if (arg.ToLower().Contains("x"))
-                {
-                    CurrentContext.StartupX = Convert.ToDouble(arg.Substring(2));
-                    MessageBox.Show("Координата X получена");
-                }
-                if (arg.ToLower().Contains("y"))
-                {
-                    CurrentContext.StartupY = Convert.ToDouble(arg.Substring(2));
-                    MessageBox.Show("Координата Y получена");
-                }     
+                string searchString = ",";
+                int indexOfStart = arg.IndexOf(searchString);
+                var x = arg.Substring(0, indexOfStart);
+                var y = arg.Substring(indexOfStart+1);
+                CurrentContext.StartupX = Convert.ToDouble(x);
+                CurrentContext.StartupY = Convert.ToDouble(y);
             }
         }
     }

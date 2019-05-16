@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
 
 namespace GraduationProject.Models
@@ -7,9 +8,21 @@ namespace GraduationProject.Models
     {
         public int Id { get; set; }
 
-        public double X { get; set; }
+        private double _x;
 
-        public double Y { get; set; }
+        public double X
+        {
+            get { return _x;}
+            set { _x = value; }
+        }
+
+        private double _y;
+
+        public double Y
+        {
+            get { return _y; }
+            set { _y = value; }
+        }
 
         public double? HorizontalDistance { get; set; }
 
@@ -33,7 +46,7 @@ namespace GraduationProject.Models
 
         public int? TreeNumber
         {
-            get => _treeNumber;
+            get { return _treeNumber; }
 
             set
             {

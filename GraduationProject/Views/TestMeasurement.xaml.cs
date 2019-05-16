@@ -50,32 +50,32 @@ namespace GraduationProject.Views
         private void Device_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             BtDevice = (sender as ComboBox)?.SelectedItem as BluetoothDeviceInfo;
-            ParseStringToObject("$PLTIT,HV,4,M,235,D,5,D,6,M*7E");
-            //if (BtDevice != null)
-            //{
-            //    if (BluetoothSecurity.PairRequest(BtDevice.DeviceAddress, "1111"))
-            //    {
-            //        if (BtDevice.Authenticated)
-            //        {
-            //            ViewModel.BluetoothDeviceInfo = BtDevice;
-            //            EllipseDistance.Fill = Brushes.DarkGreen;
+            //ParseStringToObject("$PLTIT,HV,4,M,235,D,5,D,6,M*7E");
+            if (BtDevice != null)
+            {
+                if (BluetoothSecurity.PairRequest(BtDevice.DeviceAddress, "1111"))
+                {
+                    if (BtDevice.Authenticated)
+                    {
+                        ViewModel.BluetoothDeviceInfo = BtDevice;
+                        EllipseDistance.Fill = Brushes.DarkGreen;
 
-            //            BluetoothClient.SetPin("1111");
-            //            BluetoothClient.BeginConnect(BtDevice.DeviceAddress, BluetoothService.SerialPort, Connect,
-            //                BtDevice);
-            //        }
-            //        else
-            //        {
-            //            ViewModel.BluetoothDeviceInfo = null;
-            //            MessageBox.Show("Аутентификация не пройдена. Попробуйте еще раз.");
-            //        }
-            //    }
-            //    else
-            //    {
-            //        ViewModel.BluetoothDeviceInfo = null;
-            //        MessageBox.Show("Сопряжение с устройством не установлено.");
-            //    }
-            //}
+                        BluetoothClient.SetPin("1111");
+                        BluetoothClient.BeginConnect(BtDevice.DeviceAddress, BluetoothService.SerialPort, Connect,
+                            BtDevice);
+                    }
+                    else
+                    {
+                        ViewModel.BluetoothDeviceInfo = null;
+                        MessageBox.Show("Аутентификация не пройдена. Попробуйте еще раз.");
+                    }
+                }
+                else
+                {
+                    ViewModel.BluetoothDeviceInfo = null;
+                    MessageBox.Show("Сопряжение с устройством не установлено.");
+                }
+            }
         }
 
         private void Connect(IAsyncResult result)
@@ -140,30 +140,51 @@ namespace GraduationProject.Views
                     {
                         if (CurrentContext.DataList.Count == 0 && _selectMeasure.Id == 1)
                         {
-                            _dataModel.X = CurrentContext.StartupX;
-                            _dataModel.Y = CurrentContext.StartupY;
+                            _dataModel.X = Math.Round(CurrentContext.StartupX, 3);
+                            _dataModel.Y = Math.Round(CurrentContext.StartupY, 3);
                         }
-                        else if (CurrentContext.DataList.Count == 0)
+                        else if (CurrentContext.DataList.Count == 0 && _selectMeasure.Id == 2)
                         {
-                            _dataModel.X = Math.Round(CurrentContext.StartupX +
+                            var a = _dataModel.HorizontalDistance.GetValueOrDefault();
+                            var b = _dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault();
+                            var c = Math.Cos((_dataModel.Azimuth.GetValueOrDefault() / 180 * Math.PI) +
+                                             ViewModel.Sigma.GetValueOrDefault());
+                            var c1= Math.Sin((_dataModel.Azimuth.GetValueOrDefault() / 180 * Math.PI) + 
+                                             ViewModel.Sigma.GetValueOrDefault());
+                            var d = _dataModel.HorizontalDistance.GetValueOrDefault() *
+                                    Math.Cos(_dataModel.Azimuth.GetValueOrDefault() +
+                                             ViewModel.Sigma.GetValueOrDefault());
+
+                            _dataModel.X = CurrentContext.StartupX +
                                                       (_dataModel.HorizontalDistance.GetValueOrDefault() *
-                                                       Math.Cos(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 2);
+                                                       Math.Cos(_dataModel.Azimuth.GetValueOrDefault() / 180 * Math.PI + ViewModel.Sigma.GetValueOrDefault()));
 
 
                             _dataModel.Y = Math.Round(CurrentContext.StartupY +
                                                       (_dataModel.HorizontalDistance.GetValueOrDefault() *
-                                                       Math.Sin(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 2);
+                                                       Math.Sin(_dataModel.Azimuth.GetValueOrDefault() / 180 * Math.PI + ViewModel.Sigma.GetValueOrDefault())),3);
                         }
-                        else
+                        else if (_selectMeasure.Id == 1)
                         {
                             _dataModel.X = Math.Round(CurrentContext.DataList[CurrentContext.DataList.Count - 1].X +
-                                                      (_dataModel.HorizontalDistance.GetValueOrDefault() *
-                                                       Math.Cos(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 2);
+                                                      (CurrentContext.DataList[CurrentContext.DataList.Count - 1].HorizontalDistance.GetValueOrDefault() *
+                                                       Math.Cos(CurrentContext.DataList[CurrentContext.DataList.Count - 1].Azimuth.GetValueOrDefault() / 180 * Math.PI + ViewModel.Sigma.GetValueOrDefault())),3);
 
 
                             _dataModel.Y = Math.Round(CurrentContext.DataList[CurrentContext.DataList.Count - 1].Y +
+                                                      (CurrentContext.DataList[CurrentContext.DataList.Count - 1].HorizontalDistance.GetValueOrDefault() *
+                                                       Math.Sin(CurrentContext.DataList[CurrentContext.DataList.Count - 1].Azimuth.GetValueOrDefault() / 180 * Math.PI + ViewModel.Sigma.GetValueOrDefault())),3);
+                        }
+                        else if (_selectMeasure.Id == 2)
+                        {
+                            _dataModel.X = Math.Round(CurrentContext.StartupX +
                                                       (_dataModel.HorizontalDistance.GetValueOrDefault() *
-                                                       Math.Sin(_dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault())), 2);
+                                                       Math.Cos(_dataModel.Azimuth.GetValueOrDefault() / 180 * Math.PI + ViewModel.Sigma.GetValueOrDefault())), 3);
+
+
+                            _dataModel.Y = Math.Round(CurrentContext.StartupY +
+                                                      (_dataModel.HorizontalDistance.GetValueOrDefault() *
+                                                       Math.Sin(_dataModel.Azimuth.GetValueOrDefault() / 180 * Math.PI + ViewModel.Sigma.GetValueOrDefault())), 3);
                         }
 
                         _dataModel.VerticalDistance = _dataModel.Height ?? Math.Round(Math.Sqrt(Math.Pow(_dataModel.SlopeDistance.GetValueOrDefault(), 2) - Math.Pow(_dataModel.HorizontalDistance.GetValueOrDefault(), 2)), 2);
@@ -200,26 +221,36 @@ namespace GraduationProject.Views
         private void Fork_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ForkBtDevice = (sender as ComboBox)?.SelectedItem as BluetoothDeviceInfo;
-            ParseForkStringToObject("$PHGF,SPC,2,ABC,*2B\n$PHGF,DIA,M,277,*2A");
-            //if (ForkBtDevice != null && BluetoothSecurity.PairRequest(ForkBtDevice.DeviceAddress, "1234"))
-            //{
-            //    if (ForkBtDevice.Authenticated)
-            //    {
-            //        ViewModel.ForkDeviceInfo = ForkBtDevice;
+            //ParseForkStringToObject("$PHGF,SPC,2,ABC,*2B\n$PHGF,DIA,M,277,*2A");
+            if (ForkBtDevice != null && BluetoothSecurity.PairRequest(ForkBtDevice.DeviceAddress, "1234"))
+            {
+                if (ForkBtDevice.Authenticated)
+                {
+                    ViewModel.ForkDeviceInfo = ForkBtDevice;
 
-            //        if (ViewModel.ForkDeviceInfo != null)
-            //        {
-            //            EllipseFork.Fill = Brushes.DarkGreen;
-            //        }
+                    if (ViewModel.ForkDeviceInfo != null)
+                    {
+                        EllipseFork.Fill = Brushes.DarkGreen;
+                    }
 
-            //        BluetoothForkClient.SetPin("1234");
-            //        BluetoothForkClient.BeginConnect(
-            //            ForkBtDevice.DeviceAddress,
-            //            BluetoothService.SerialPort,
-            //            ConnectToFork,
-            //            ForkBtDevice);
-            //    }
-            //}
+                    BluetoothForkClient.SetPin("1234");
+                    BluetoothForkClient.BeginConnect(
+                        ForkBtDevice.DeviceAddress,
+                        BluetoothService.SerialPort,
+                        ConnectToFork,
+                        ForkBtDevice);
+                }
+                else
+                {
+                    ViewModel.ForkDeviceInfo = null;
+                    MessageBox.Show("Аутентификация не пройдена. Попробуйте еще раз.");
+                }
+            }
+            else
+            {
+                ViewModel.ForkDeviceInfo = null;
+                MessageBox.Show("Сопряжение с устройством не установлено.");
+            }
         }
 
         private void ConnectToFork(IAsyncResult result)
@@ -262,7 +293,7 @@ namespace GraduationProject.Views
 
             var temp = message.Split(new[] {','});
             var species = temp[3];
-            var dia = int.Parse(temp[7]);
+            var dia = double.Parse(temp[7]);
 
             if (_dataModel == null)
             {
@@ -274,6 +305,8 @@ namespace GraduationProject.Views
 
             if (_selectMeasure.Id == 5)
             {
+                _dataModel.Species = species;
+                _dataModel.DiameterOne = dia / 10;
                 ViewModel.Measurements.Add(_dataModel);
                 CurrentContext.DataList.Add(_dataModel);
                 _dataModel = null;
@@ -515,7 +548,7 @@ namespace GraduationProject.Views
                 Binding = new Binding("DiameterTwo")
             };
 
-            if (!DataGrid.Columns.Contains(column))
+            if (DataGrid.Columns.FirstOrDefault(x=>x.SortMemberPath == column.SortMemberPath) == null)
             {
                 DataGrid.Columns.Add(column);
             }

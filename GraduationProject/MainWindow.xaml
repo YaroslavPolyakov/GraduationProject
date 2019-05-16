@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        mc:Ignorable="d"
-        Title="Диплом" Background="#FFDEDEDE" ResizeMode="NoResize" MaxWidth="1280" MaxHeight="800"  WindowState="Maximized" 
+        mc:Ignorable="d" Icon="../Resources/logo.png"
+        Title="TreeMeasurement" Background="#FFDEDEDE" ResizeMode="NoResize" MaxWidth="1280" MaxHeight="800"  WindowState="Maximized" 
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Storyboard x:Key="OpenMenu">
@@ -56,7 +56,7 @@
                     </StackPanel>
                 </materialDesign:PopupBox>
             </StackPanel>
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22">Диплом</TextBlock>
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" Text="Лесные измерения"/>
         </Grid>
         <Grid x:Name="GridMenu" Width="70" HorizontalAlignment="Left" Background="#FF31577E">
             <Grid.Effect>
