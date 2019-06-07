@@ -46,6 +46,7 @@ namespace GraduationProject.Views
             InitializeComponent();
             SetStartupSettings();
             OpenDialog();
+
             if (ViewModel.SelectMeasure == null)
             {
                 SelectModeComboBox.SelectedItem = CurrentContext.MeasureValues.FirstOrDefault();
@@ -63,8 +64,7 @@ namespace GraduationProject.Views
         private void Fork_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ForkBtDevice = (sender as ComboBox)?.SelectedItem as BluetoothDeviceInfo;
-            ParseForkStringToObject("$PHGF,SPC,2,ABC,*2B\n$PHGF,DIA,M,277,*2A");
-            //Connect(ForkBtDevice, "1234", ReadDataFromFork);
+            Connect(ForkBtDevice, "1234", ReadDataFromFork);
             EllipseFork.Fill = Brushes.DarkGreen;
         }
 
@@ -96,7 +96,7 @@ namespace GraduationProject.Views
         {
             if (result.IsCompleted)
             {
-                for (;;)
+                while (true)
                 {
                     Stream = BluetoothClient.GetStream();
 
@@ -129,7 +129,7 @@ namespace GraduationProject.Views
             {
                 SystemSounds.Beep.Play();
                 //MessageBox.Show(message);
-                var arrayData = message.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
+                var arrayData = message.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 var indexHv = Array.IndexOf(arrayData, "HV") + 1;
                 var indexM = Array.IndexOf(arrayData, "M") + 1;
                 var indexD = Array.IndexOf(arrayData, "D") + 1;
@@ -208,7 +208,7 @@ namespace GraduationProject.Views
         {
             if (result.IsCompleted)
             {
-                for (;;)
+                while(true)
                 {
                     ForkStream = BluetoothForkClient.GetStream();
 
@@ -262,7 +262,6 @@ namespace GraduationProject.Views
 
             if (_dataModel.Azimuth != null || _dataModel.Height != null)
             {
-                //было  _dataModel.DiameterOne != 0
                 if (_isHasDiameterTwo && _dataModel.DiameterOne != null && _selectMeasure.Id != 1)
                 {
                     _dataModel.DiameterTwo = dia / 10;
@@ -281,7 +280,6 @@ namespace GraduationProject.Views
             }
             else
             {
-                //_dataModel.DiameterOne != 0
                 if (_isHasDiameterTwo && _dataModel.DiameterOne != null && _selectMeasure.Id != 1)
                 {
                     _dataModel.DiameterTwo = dia / 10;
@@ -378,6 +376,7 @@ namespace GraduationProject.Views
                 if (CurrentContext.MeasureValues.FirstOrDefault(x => x.Name == nameMode) == null || dataList.Count == 0)
                 {
                     MessageBox.Show("Ошибка. Не удалось открыть файл");
+
                     return;
                 }
 
@@ -582,60 +581,58 @@ namespace GraduationProject.Views
                     DataGrid.Columns.Add(column);
                 }
 
-                    switch (_selectMeasure.Name)
-                    {
-                        case "ГИ":
-                            DiameterDockPanel.Visibility = Visibility.Hidden;
-                            HeightDockPanel.Visibility = Visibility.Hidden;
-                            DiameterButton.IsChecked = false;
-                            HeightButton.IsChecked = false;
-                            DiameterButton.IsEnabled = true;
-                            HeightButton.IsEnabled = true;
-                            break;
+                switch (_selectMeasure.Name)
+                {
+                    case "ГИ":
+                        DiameterDockPanel.Visibility = Visibility.Hidden;
+                        HeightDockPanel.Visibility = Visibility.Hidden;
+                        DiameterButton.IsChecked = false;
+                        HeightButton.IsChecked = false;
+                        DiameterButton.IsEnabled = true;
+                        HeightButton.IsEnabled = true;
+                        break;
 
-                        case "РКП":
-                            DiameterDockPanel.Visibility = Visibility.Visible;
-                            HeightDockPanel.Visibility = Visibility.Visible;
-                            DiameterButton.IsChecked = false;
-                            HeightButton.IsChecked = false;
-                            DiameterButton.IsEnabled = true;
-                            HeightButton.IsEnabled = true;
-                            break;
+                    case "РКП":
+                        DiameterDockPanel.Visibility = Visibility.Visible;
+                        HeightDockPanel.Visibility = Visibility.Visible;
+                        DiameterButton.IsChecked = false;
+                        HeightButton.IsChecked = false;
+                        DiameterButton.IsEnabled = true;
+                        HeightButton.IsEnabled = true;
+                        break;
 
-                        case "ППП":
-                            DiameterDockPanel.Visibility = Visibility.Visible;
-                            HeightDockPanel.Visibility = Visibility.Visible;
-                            DiameterButton.IsChecked = true;
-                            DiameterButton.IsEnabled = false;
-                            HeightButton.IsChecked = false;
-                            HeightButton.IsEnabled = true;
-                            break;
+                    case "ППП":
+                        DiameterDockPanel.Visibility = Visibility.Visible;
+                        HeightDockPanel.Visibility = Visibility.Visible;
+                        DiameterButton.IsChecked = true;
+                        DiameterButton.IsEnabled = false;
+                        HeightButton.IsChecked = false;
+                        HeightButton.IsEnabled = true;
+                        break;
 
-                        case "ЗВ":
-                            DiameterDockPanel.Visibility = Visibility.Visible;
-                            HeightDockPanel.Visibility = Visibility.Visible;
-                            DiameterButton.IsChecked = false;
-                            DiameterButton.IsEnabled = false;
-                            HeightButton.IsChecked = true;
-                            HeightButton.IsEnabled = false;
-                            break;
+                    case "ЗВ":
+                        DiameterDockPanel.Visibility = Visibility.Visible;
+                        HeightDockPanel.Visibility = Visibility.Visible;
+                        DiameterButton.IsChecked = false;
+                        DiameterButton.IsEnabled = false;
+                        HeightButton.IsChecked = true;
+                        HeightButton.IsEnabled = false;
+                        break;
 
-                        case "ЗД":
-                            DiameterDockPanel.Visibility = Visibility.Visible;
-                            HeightDockPanel.Visibility = Visibility.Hidden;
-                            DiameterButton.IsChecked = false;
-                            DiameterButton.IsEnabled = false;
-                            HeightButton.IsChecked = false;
-                            HeightButton.IsEnabled = false;
-                            break;
+                    case "ЗД":
+                        DiameterDockPanel.Visibility = Visibility.Visible;
+                        HeightDockPanel.Visibility = Visibility.Hidden;
+                        DiameterButton.IsChecked = false;
+                        DiameterButton.IsEnabled = false;
+                        HeightButton.IsChecked = false;
+                        HeightButton.IsEnabled = false;
+                        break;
 
-                        default:
-                            break;
-                    }
+                    default:
+                        break;
                 }
             }
         }
-
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
             DataGrid.IsReadOnly = false;

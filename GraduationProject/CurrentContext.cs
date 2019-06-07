@@ -46,6 +46,7 @@ namespace GraduationProject
                     }
                 }
             }
+
             for (var i = 0; i < mac.Length; i++)
             {
                 result += mac[i];
@@ -61,12 +62,7 @@ namespace GraduationProject
 
         public static double? ToDoubleParse(string variable)
         {
-            double result;
-            if (double.TryParse(variable, out result))
-            {
-                return result;
-            }
-            return null;
+            return double.TryParse(variable, out var result) ? result : (double?)null;
         }
     }
 }

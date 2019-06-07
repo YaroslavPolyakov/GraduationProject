@@ -11,7 +11,7 @@ namespace GraduationProject.ViewModels
         private ObservableCollection<BluetoothDeviceInfo> _devices;
         public ObservableCollection<BluetoothDeviceInfo> Devices
         {
-            get { return _devices; }
+            get => _devices;
             set
             {
                 _devices = value;
@@ -22,7 +22,7 @@ namespace GraduationProject.ViewModels
         private ObservableCollection<DataModel> _measurements;
         public ObservableCollection<DataModel> Measurements
         {
-            get { return _measurements; }
+            get => _measurements;
             set
             {
                 _measurements = value;
@@ -33,7 +33,7 @@ namespace GraduationProject.ViewModels
         private BluetoothDeviceInfo _bluetoothDeviceInfo;
         public BluetoothDeviceInfo BluetoothDeviceInfo
         {
-            get { return _bluetoothDeviceInfo; }
+            get => _bluetoothDeviceInfo;
             set
             {
                 _bluetoothDeviceInfo = value;
@@ -44,7 +44,7 @@ namespace GraduationProject.ViewModels
         private BluetoothDeviceInfo _forkDeviceInfo;
         public BluetoothDeviceInfo ForkDeviceInfo
         {
-            get { return _forkDeviceInfo; }
+            get => _forkDeviceInfo;
             set
             {
                 _forkDeviceInfo = value;
@@ -55,7 +55,7 @@ namespace GraduationProject.ViewModels
         private MeasureValueModel _selectMeasure;
         public MeasureValueModel SelectMeasure
         {
-            get { return _selectMeasure; }
+            get => _selectMeasure;
             set
             {
                 _selectMeasure = value;
@@ -66,7 +66,7 @@ namespace GraduationProject.ViewModels
         private ObservableCollection<MeasureValueModel> _measureValues;
         public ObservableCollection<MeasureValueModel> MeasureValues
         {
-            get { return _measureValues; }
+            get => _measureValues;
             set
             {
                 _measureValues = value;
@@ -78,7 +78,7 @@ namespace GraduationProject.ViewModels
         private double? _sigma;
         public double? Sigma
         {
-            get { return _sigma; }
+            get => _sigma;
             set
             {
                 _sigma = value;
@@ -89,7 +89,7 @@ namespace GraduationProject.ViewModels
         private double _heightLevelEyes;
         public double HeightLevelEyes
         {
-            get { return _heightLevelEyes; }
+            get => _heightLevelEyes;
             set
             {
                 _heightLevelEyes = value;
