@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 
 namespace GraduationProject.Models
 {
@@ -42,9 +40,9 @@ namespace GraduationProject.Models
 
         public string Species { get; set; }
 
-        private int? _treeNumber;
+        private string _treeNumber;
 
-        public int? TreeNumber
+        public string TreeNumber
         {
             get { return _treeNumber; }
 
@@ -68,7 +66,7 @@ namespace GraduationProject.Models
         public override string ToString()
         {
             return
-                $"{Id},{X},{Y},{HorizontalDistance},{VerticalDistance},{SlopeDistance},{Azimuth},{Bias},{DiameterOne},{DiameterTwo},{Species}";
+                $"{Id},{X},{Y},{HorizontalDistance},{VerticalDistance},{SlopeDistance},{Azimuth},{Bias},{DiameterOne},{DiameterTwo},{Species},{TreeNumber}";
         }
     }
 }

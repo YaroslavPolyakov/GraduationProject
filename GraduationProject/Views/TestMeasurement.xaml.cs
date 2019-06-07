@@ -50,32 +50,32 @@ namespace GraduationProject.Views
         private void Device_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             BtDevice = (sender as ComboBox)?.SelectedItem as BluetoothDeviceInfo;
-            //ParseStringToObject("$PLTIT,HV,4,M,235,D,5,D,6,M*7E");
-            if (BtDevice != null)
-            {
-                if (BluetoothSecurity.PairRequest(BtDevice.DeviceAddress, "1111"))
-                {
-                    if (BtDevice.Authenticated)
-                    {
-                        ViewModel.BluetoothDeviceInfo = BtDevice;
-                        EllipseDistance.Fill = Brushes.DarkGreen;
+            ParseStringToObject("$PLTIT,HV,4,M,235,D,5,D,6,M*7E");
+            //if (BtDevice != null)
+            //{
+            //    if (BluetoothSecurity.PairRequest(BtDevice.DeviceAddress, "1111"))
+            //    {
+            //        if (BtDevice.Authenticated)
+            //        {
+            //            ViewModel.BluetoothDeviceInfo = BtDevice;
+            //            EllipseDistance.Fill = Brushes.DarkGreen;
 
-                        BluetoothClient.SetPin("1111");
-                        BluetoothClient.BeginConnect(BtDevice.DeviceAddress, BluetoothService.SerialPort, Connect,
-                            BtDevice);
-                    }
-                    else
-                    {
-                        ViewModel.BluetoothDeviceInfo = null;
-                        MessageBox.Show("Аутентификация не пройдена. Попробуйте еще раз.");
-                    }
-                }
-                else
-                {
-                    ViewModel.BluetoothDeviceInfo = null;
-                    MessageBox.Show("Сопряжение с устройством не установлено.");
-                }
-            }
+            //            BluetoothClient.SetPin("1111");
+            //            BluetoothClient.BeginConnect(BtDevice.DeviceAddress, BluetoothService.SerialPort, Connect,
+            //                BtDevice);
+            //        }
+            //        else
+            //        {
+            //            ViewModel.BluetoothDeviceInfo = null;
+            //            MessageBox.Show("Аутентификация не пройдена. Попробуйте еще раз.");
+            //        }
+            //    }
+            //    else
+            //    {
+            //        ViewModel.BluetoothDeviceInfo = null;
+            //        MessageBox.Show("Сопряжение с устройством не установлено.");
+            //    }
+            //}
         }
 
         private void Connect(IAsyncResult result)
@@ -145,16 +145,6 @@ namespace GraduationProject.Views
                         }
                         else if (CurrentContext.DataList.Count == 0 && _selectMeasure.Id == 2)
                         {
-                            var a = _dataModel.HorizontalDistance.GetValueOrDefault();
-                            var b = _dataModel.Azimuth.GetValueOrDefault() + ViewModel.Sigma.GetValueOrDefault();
-                            var c = Math.Cos((_dataModel.Azimuth.GetValueOrDefault() / 180 * Math.PI) +
-                                             ViewModel.Sigma.GetValueOrDefault());
-                            var c1= Math.Sin((_dataModel.Azimuth.GetValueOrDefault() / 180 * Math.PI) + 
-                                             ViewModel.Sigma.GetValueOrDefault());
-                            var d = _dataModel.HorizontalDistance.GetValueOrDefault() *
-                                    Math.Cos(_dataModel.Azimuth.GetValueOrDefault() +
-                                             ViewModel.Sigma.GetValueOrDefault());
-
                             _dataModel.X = CurrentContext.StartupX +
                                                       (_dataModel.HorizontalDistance.GetValueOrDefault() *
                                                        Math.Cos(_dataModel.Azimuth.GetValueOrDefault() / 180 * Math.PI + ViewModel.Sigma.GetValueOrDefault()));
@@ -221,36 +211,36 @@ namespace GraduationProject.Views
         private void Fork_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ForkBtDevice = (sender as ComboBox)?.SelectedItem as BluetoothDeviceInfo;
-            //ParseForkStringToObject("$PHGF,SPC,2,ABC,*2B\n$PHGF,DIA,M,277,*2A");
-            if (ForkBtDevice != null && BluetoothSecurity.PairRequest(ForkBtDevice.DeviceAddress, "1234"))
-            {
-                if (ForkBtDevice.Authenticated)
-                {
-                    ViewModel.ForkDeviceInfo = ForkBtDevice;
+            ParseForkStringToObject("$PHGF,SPC,2,ABC,*2B\n$PHGF,DIA,M,277,*2A");
+            //if (ForkBtDevice != null && BluetoothSecurity.PairRequest(ForkBtDevice.DeviceAddress, "1234"))
+            //{
+            //    if (ForkBtDevice.Authenticated)
+            //    {
+            //        ViewModel.ForkDeviceInfo = ForkBtDevice;
 
-                    if (ViewModel.ForkDeviceInfo != null)
-                    {
-                        EllipseFork.Fill = Brushes.DarkGreen;
-                    }
+            //        if (ViewModel.ForkDeviceInfo != null)
+            //        {
+            //            EllipseFork.Fill = Brushes.DarkGreen;
+            //        }
 
-                    BluetoothForkClient.SetPin("1234");
-                    BluetoothForkClient.BeginConnect(
-                        ForkBtDevice.DeviceAddress,
-                        BluetoothService.SerialPort,
-                        ConnectToFork,
-                        ForkBtDevice);
-                }
-                else
-                {
-                    ViewModel.ForkDeviceInfo = null;
-                    MessageBox.Show("Аутентификация не пройдена. Попробуйте еще раз.");
-                }
-            }
-            else
-            {
-                ViewModel.ForkDeviceInfo = null;
-                MessageBox.Show("Сопряжение с устройством не установлено.");
-            }
+            //        BluetoothForkClient.SetPin("1234");
+            //        BluetoothForkClient.BeginConnect(
+            //            ForkBtDevice.DeviceAddress,
+            //            BluetoothService.SerialPort,
+            //            ConnectToFork,
+            //            ForkBtDevice);
+            //    }
+            //    else
+            //    {
+            //        ViewModel.ForkDeviceInfo = null;
+            //        MessageBox.Show("Аутентификация не пройдена. Попробуйте еще раз.");
+            //    }
+            //}
+            //else
+            //{
+            //    ViewModel.ForkDeviceInfo = null;
+            //    MessageBox.Show("Сопряжение с устройством не установлено.");
+            //}
         }
 
         private void ConnectToFork(IAsyncResult result)
@@ -353,7 +343,7 @@ namespace GraduationProject.Views
         private void SaveOnClick(bool isDeleteData)
         {
             var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("Id,X,Y,HorizontalDistance,VerticalDistance,SlopeDistance,Azimuth,Bias,DiameterOne,DiameterTwo,Species");
+            stringBuilder.AppendLine("Id,X,Y,HorizontalDistance,VerticalDistance,SlopeDistance,Azimuth,Bias,DiameterOne,DiameterTwo,Species,TreeNumber");
 
             foreach (var item in ViewModel.Measurements)
             {
@@ -472,7 +462,7 @@ namespace GraduationProject.Views
 
         private void OpenDialog()
         {
-            if (MessageBox.Show("Загрузить последние измерения?", "Title", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Загрузить последние измерения?", "", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 OpenOnClick();
             }

@@ -124,12 +124,17 @@
 
         <DataGrid AutoGenerateColumns="False" x:Name="DataGrid" CanUserAddRows="True" Margin="10,200,10,10" MinWidth="800"
                   ItemsSource="{Binding Measurements}" CanUserDeleteRows="True" IsReadOnly="True">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="FontSize" Value="20"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button x:Name="ButtonDeleteRow" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF31577E" Click="ButtonDeleteRow_OnClick">
-                                <materialDesign:PackIcon Kind="Delete"/>
+                            <Button x:Name="ButtonDeleteRow" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="#FF31577E" Click="ButtonDeleteRow_OnClick" Width="20" Height="20">
+                                <materialDesign:PackIcon Kind="Delete" Width="20" Height="20"/>
                             </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
