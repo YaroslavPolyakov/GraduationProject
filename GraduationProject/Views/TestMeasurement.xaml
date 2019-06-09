@@ -139,7 +139,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="№ Измерения" FontSize="20" IsReadOnly="True" Binding="{Binding Path=Id}" MinWidth="130" />
+                <DataGridTextColumn Header="Id" FontSize="20" IsReadOnly="True" Binding="{Binding Path=Id}" />
                 <!--<DataGridTextColumn Header="Уклон" IsReadOnly="True" Binding="{Binding Path=Bias}" MinWidth="130" />
                 <DataGridTextColumn Header="Азимут" IsReadOnly="True" Binding="{Binding Path=Azimuth}" MinWidth="130" />-->
                 <!--<DataGridTextColumn Header="Диаметр" IsReadOnly="True" Binding="{Binding Path=DiameterOne}" MinWidth="130" />
