@@ -3,6 +3,9 @@ using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using InTheHand.Net.Sockets;
 using GraduationProject.Models;
+using System.Collections.Generic;
+using Microsoft.Win32;
+using System;
 
 namespace GraduationProject.ViewModels
 {
@@ -75,6 +78,30 @@ namespace GraduationProject.ViewModels
             }
         }
 
+        private ObservableCollection<string> _categoriesOne;
+        public ObservableCollection<string> CategoriesOne
+        {
+            get { return _categoriesOne; }
+            set
+            {
+                _categoriesOne = value;
+                OnPropertyChanged("CategoriesOne");
+
+            }
+        }
+
+        private ObservableCollection<string> _categoriesTwo;
+        public ObservableCollection<string> CategoriesTwo
+        {
+            get { return _categoriesTwo; }
+            set
+            {
+                _categoriesTwo = value;
+                OnPropertyChanged("CategoriesTwo");
+
+            }
+        }
+
         private double? _sigma;
         public double? Sigma
         {
@@ -109,6 +136,9 @@ namespace GraduationProject.ViewModels
             Devices = new ObservableCollection<BluetoothDeviceInfo>(CurrentContext.Devices);
             Measurements = new ObservableCollection<DataModel>(CurrentContext.DataList);
             MeasureValues = new ObservableCollection<MeasureValueModel>(CurrentContext.MeasureValues);
+
+            var file = System.IO.File.ReadAllText(Environment.CurrentDirectory + "/cat.txt").Split('\n');
+            CategoriesOne = new ObservableCollection<string>(file);
         }
     }
 }

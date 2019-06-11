@@ -343,7 +343,7 @@ namespace GraduationProject.Views
         private void SaveOnClick(bool isDeleteData)
         {
             var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("Id,X,Y,HorizontalDistance,VerticalDistance,SlopeDistance,Azimuth,Bias,DiameterOne,DiameterTwo,Species,TreeNumber");
+            stringBuilder.AppendLine("Id,X,Y,HorizontalDistance,VerticalDistance,SlopeDistance,Azimuth,Bias,DiameterOne,DiameterTwo,Species,TreeNumber,CategoryOne");
 
             foreach (var item in ViewModel.Measurements)
             {
@@ -606,14 +606,29 @@ namespace GraduationProject.Views
             {
                 foreach (var itemTemplateColumn in _selectMeasure.TemplateColumns)
                 {
-                    var column = new DataGridTextColumn
+                    if (itemTemplateColumn.Name.Contains("Кат."))
                     {
-                        Header = itemTemplateColumn.Name,
-                        FontSize = 20,
-                        Binding = new Binding(itemTemplateColumn.BindingName)
-                    };
+                        var catOne = new DataGridComboBoxColumn
+                        {
+                            Header = itemTemplateColumn.Name,
+                            SelectedItemBinding = new Binding(itemTemplateColumn.BindingName),
+                        };
+                        catOne.ItemsSource = itemTemplateColumn.Name.Contains("Кат. 1") ? ViewModel.CategoriesOne : ViewModel.CategoriesTwo;
+                        DataGrid.FontSize = 20;
 
-                    DataGrid.Columns.Add(column);
+                        DataGrid.Columns.Add(catOne);
+                    }
+                    else
+                    {
+                        var column = new DataGridTextColumn
+                        {
+                            Header = itemTemplateColumn.Name,
+                            FontSize = 20,
+                            Binding = new Binding(itemTemplateColumn.BindingName)
+                        };
+
+                        DataGrid.Columns.Add(column);
+                    }
                 }
 
                 if (_selectMeasure.Name == "ГИ")
@@ -642,6 +657,9 @@ namespace GraduationProject.Views
                     DiameterButton.IsEnabled = false;
                     HeightButton.IsChecked = false;
                     HeightButton.IsEnabled = true;
+
+                    
+
                 }
                 else if (_selectMeasure.Name == "ЗВ")
                 {
@@ -673,6 +691,17 @@ namespace GraduationProject.Views
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             DataGrid.IsReadOnly = true;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var openfile = new OpenFileDialog();
+
+            if (openfile.ShowDialog() == true)
+            {
+                var file = File.ReadAllText(openfile.FileName);
+                ViewModel.CategoriesTwo = new ObservableCollection<string>(file.Split('\n'));
+            }
         }
     }
 }

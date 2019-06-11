@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 
 namespace GraduationProject.Models
 {
@@ -39,6 +40,10 @@ namespace GraduationProject.Models
         public double? DiameterTwo { get; set; }
 
         public string Species { get; set; }
+
+        public string CategoryOne { get; set; }
+
+        public string CategoryTwo { get; set; }
 
         private string _treeNumber;
 
